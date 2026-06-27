@@ -276,7 +276,7 @@
       margin-top: 0.5rem;
     }
 
-    /* Rune page layout */
+    /* Rune page layout (object style) */
     .rune-page {
       display: flex;
       gap: 2rem;
@@ -435,9 +435,6 @@
   </div>
 
   <script>
-    // =============================================
-    //  GLOBALS
-    // =============================================
     let allChampionItems = [];
     const dataCache = {};
 
@@ -555,9 +552,6 @@
       splashBg.classList.remove('no-splash');
     }
 
-    // =============================================
-    //  FETCH CHAMPION JSON + RENDER
-    // =============================================
     async function loadChampionInfo(championId, championName) {
       const infoPanel = document.getElementById('info-panel');
       infoPanel.innerHTML = `<div class="champion-detail"><h2>${championName}</h2><p class="placeholder-message">⏳ Loading guide...</p></div>`;
@@ -616,44 +610,55 @@
           html += `</div>`;
         }
 
-        // Runes (in-game layout)
-        if (data.runes && typeof data.runes === 'object') {
-          html += `<div class="info-slot"><h3>Recommended Runes</h3>`;
-          html += `<div class="rune-page-wrapper"><div class="rune-page">`;
-
-          if (data.runes.primary) {
-            const p = data.runes.primary;
-            html += `<div class="rune-tree"><h4>`;
-            if (p.icon) html += `<img src="${p.icon}" class="tree-icon" alt="tree" />`;
-            html += `${p.name || 'Primary'}</h4>`;
-            if (p.keystone) html += `<div class="keystone-slot"><img src="${p.keystone}" alt="Keystone" /></div>`;
-            if (p.row1) html += `<div class="rune-row"><img src="${p.row1}" alt="Row 1" /></div>`;
-            if (p.row2) html += `<div class="rune-row"><img src="${p.row2}" alt="Row 2" /></div>`;
-            if (p.row3) html += `<div class="rune-row"><img src="${p.row3}" alt="Row 3" /></div>`;
-            html += `</div>`;
-          }
-
-          if (data.runes.secondary) {
-            const s = data.runes.secondary;
-            html += `<div class="rune-tree"><h4>`;
-            if (s.icon) html += `<img src="${s.icon}" class="tree-icon" alt="tree" />`;
-            html += `${s.name || 'Secondary'}</h4>`;
-            html += `<div class="secondary-runes">`;
-            if (s.rune1) html += `<img src="${s.rune1}" alt="Sec Rune 1" />`;
-            if (s.rune2) html += `<img src="${s.rune2}" alt="Sec Rune 2" />`;
+        // Runes
+        if (data.runes) {
+          // Check if runes is an array -> simple row
+          if (Array.isArray(data.runes)) {
+            html += `<div class="info-slot"><h3>Recommended Runes</h3><div class="items-row">`;
+            data.runes.forEach(runeUrl => {
+              html += `<img src="${runeUrl}" alt="Rune" class="item-icon" loading="lazy" />`;
+            });
             html += `</div></div>`;
           }
+          // Otherwise, assume it's the in-game layout object
+          else if (typeof data.runes === 'object') {
+            html += `<div class="info-slot"><h3>Recommended Runes</h3>`;
+            html += `<div class="rune-page-wrapper"><div class="rune-page">`;
 
-          html += `</div></div>`;
+            if (data.runes.primary) {
+              const p = data.runes.primary;
+              html += `<div class="rune-tree"><h4>`;
+              if (p.icon) html += `<img src="${p.icon}" class="tree-icon" alt="tree" />`;
+              html += `${p.name || 'Primary'}</h4>`;
+              if (p.keystone) html += `<div class="keystone-slot"><img src="${p.keystone}" alt="Keystone" /></div>`;
+              if (p.row1) html += `<div class="rune-row"><img src="${p.row1}" alt="Row 1" /></div>`;
+              if (p.row2) html += `<div class="rune-row"><img src="${p.row2}" alt="Row 2" /></div>`;
+              if (p.row3) html += `<div class="rune-row"><img src="${p.row3}" alt="Row 3" /></div>`;
+              html += `</div>`;
+            }
 
-          if (data.runes.stats && Array.isArray(data.runes.stats) && data.runes.stats.length > 0) {
-            html += `<div class="stats-row">`;
-            data.runes.stats.forEach(statUrl => {
-              html += `<img src="${statUrl}" alt="Stat" />`;
-            });
+            if (data.runes.secondary) {
+              const s = data.runes.secondary;
+              html += `<div class="rune-tree"><h4>`;
+              if (s.icon) html += `<img src="${s.icon}" class="tree-icon" alt="tree" />`;
+              html += `${s.name || 'Secondary'}</h4>`;
+              html += `<div class="secondary-runes">`;
+              if (s.rune1) html += `<img src="${s.rune1}" alt="Sec Rune 1" />`;
+              if (s.rune2) html += `<img src="${s.rune2}" alt="Sec Rune 2" />`;
+              html += `</div></div>`;
+            }
+
+            html += `</div></div>`;
+
+            if (data.runes.stats && Array.isArray(data.runes.stats) && data.runes.stats.length > 0) {
+              html += `<div class="stats-row">`;
+              data.runes.stats.forEach(statUrl => {
+                html += `<img src="${statUrl}" alt="Stat" />`;
+              });
+              html += `</div>`;
+            }
             html += `</div>`;
           }
-          html += `</div>`; // close info-slot
         } else if (data.runesImage) {
           html += `<div class="info-slot"><h3>Recommended Runes</h3>`;
           html += `<img src="${data.runesImage}" alt="Runes vs ${championName}" class="build-image" loading="lazy" />`;
