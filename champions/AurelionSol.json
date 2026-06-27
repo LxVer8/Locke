@@ -6,10 +6,10 @@
     "lateGame": "Falls off against tanks. Peel him off your backline.",
     "matchupNote": "Build anti-heal early. Fight inside his Q range to make it harder for him to hit the edge.",
     "items": [
-      "images/items/thornmail.png",
-      "images/items/plated_steelcaps.png",
-      "images/items/bramble_vest.png",
-      "images/items/randuins_omen.png"
+      "images/items/Thornmail.png",
+      "images/items/Plated_Steelcaps.png",
+      "images/items/Bramble_Vest.png",
+      "images/items/Randuins_Omen.png"
     ],
     "runes": [
     "images/runes/Conqueror.png",
