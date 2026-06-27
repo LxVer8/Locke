@@ -12,7 +12,14 @@ const championData = {
       "images/items/bramble_vest.png",
       "images/items/randuins_omen.png"
     ],
-    runesImage: "images/runes/aatrox_runes.png"
+    runes: [
+    "images/runes/Conqueror.png",
+    "images/runes/Triumph.png",
+    "images/runes/Legend_Alacrity.png",
+    "images/runes/Last_Stand.png",
+    "images/runes/Bone_Plating.png",
+    "images/runes/Revitalize.png"
+  ]
   },
   Ahri: {
     difficulty: 4.5,
@@ -26,7 +33,14 @@ const championData = {
       "images/items/banshees_veil.png",
       "images/items/zhonyas_hourglass.png"
     ],
-    runesImage: "images/runes/ahri_runes.png"
+    runes: [
+    "images/runes/Conqueror.png",
+    "images/runes/Triumph.png",
+    "images/runes/Legend_Alacrity.png",
+    "images/runes/Last_Stand.png",
+    "images/runes/Bone_Plating.png",
+    "images/runes/Revitalize.png"
+  ]
   }
   // … add more champions
 };

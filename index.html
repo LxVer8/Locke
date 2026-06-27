@@ -21,7 +21,6 @@
       background: #0a0a0f;
     }
 
-    /* Splash background – lighter overlay */
     .splash-background {
       position: fixed;
       top: 0;
@@ -32,9 +31,9 @@
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-      background-color: rgba(10, 10, 15, 0.45); /* reduced opacity */
+      background-color: rgba(10, 10, 15, 0.45);
       background-blend-mode: multiply;
-      transition: background-image 0.15s ease;   /* faster transition */
+      transition: background-image 0.15s ease;
     }
 
     .splash-background.no-splash {
@@ -292,6 +291,103 @@
       background: rgba(200, 170, 110, 0.15);
     }
 
+    /* Rune page layout */
+    .rune-page {
+      display: flex;
+      gap: 2rem;
+      margin-bottom: 1.2rem;
+      flex-wrap: wrap;
+    }
+
+    .rune-tree {
+      flex: 1;
+      min-width: 200px;
+      background: rgba(27, 27, 42, 0.7);
+      border: 1px solid #2e2e3a;
+      border-radius: 12px;
+      padding: 1rem;
+      backdrop-filter: blur(4px);
+    }
+
+    .rune-tree h4 {
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 0.9rem;
+      color: #c8aa6e;
+      margin-bottom: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .tree-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+    }
+
+    .keystone-slot {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 0.8rem;
+    }
+
+    .keystone-slot img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 2px solid #c8aa6e;
+      background: #0a0a0f;
+    }
+
+    .rune-row {
+      display: flex;
+      justify-content: center;
+      margin: 0.3rem 0;
+    }
+
+    .rune-row img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid #4a3e2c;
+      background: #0a0a0f;
+    }
+
+    .secondary-runes {
+      display: flex;
+      gap: 0.8rem;
+      justify-content: center;
+      margin-top: 0.5rem;
+    }
+
+    .secondary-runes img {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 1px solid #4a3e2c;
+      background: #0a0a0f;
+    }
+
+    .stats-row {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+
+    .stats-row img {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid #4a3e2c;
+      background: #0a0a0f;
+    }
+
+    .rune-page-wrapper {
+      margin-bottom: 1.2rem;
+    }
+
     @media (max-width: 700px) {
       .main-layout {
         flex-direction: column;
@@ -353,10 +449,16 @@
     </div>
   </div>
 
-  <script src="data.js"></script>
   <script>
+    // =============================================
+    //  GLOBALS
+    // =============================================
     let allChampionItems = [];
+    const dataCache = {}; // cache fetched JSON by championId
 
+    // =============================================
+    //  FETCH AND BUILD CHAMPION LIST
+    // =============================================
     (async () => {
       const championList = document.getElementById('champion-list');
 
@@ -371,7 +473,6 @@
         const champsData = await champsRes.json();
         const champions = Object.values(champsData.data);
 
-        // Build the sidebar and also preload all splash arts
         champions.forEach(champ => {
           const item = document.createElement('div');
           item.className = 'champion-item';
@@ -392,16 +493,15 @@
           item.addEventListener('click', () => {
             document.querySelectorAll('.champion-item').forEach(el => el.classList.remove('active'));
             item.classList.add('active');
-            showChampionInfo(champ.id, champ.name);
+            loadChampionInfo(champ.id, champ.name);
           });
 
           championList.appendChild(item);
           allChampionItems.push(item);
         });
 
-        // Preload all splash images (so they appear instantly on click)
+        // Preload splash images
         preloadSplashImages(champions);
-
         setupSearch();
 
       } catch (error) {
@@ -474,12 +574,39 @@
       splashBg.classList.remove('no-splash');
     }
 
-    function showChampionInfo(championId, championName) {
+    // =============================================
+    //  FETCH CHAMPION JSON + RENDER
+    // =============================================
+    async function loadChampionInfo(championId, championName) {
       const infoPanel = document.getElementById('info-panel');
-      const data = championData[championId];
 
-      // Update splash background (now instant because preloaded)
+      // Show loading state
+      infoPanel.innerHTML = `<div class="champion-detail"><h2>${championName}</h2><p class="placeholder-message">⏳ Loading guide...</p></div>`;
+
+      // Update splash immediately
       setSplashBackground(championId);
+
+      // Fetch data (use cache if available)
+      let data;
+      if (dataCache[championId]) {
+        data = dataCache[championId];
+      } else {
+        try {
+          const res = await fetch(`champions/${championId}.json`);
+          if (!res.ok) throw new Error('Not found');
+          data = await res.json();
+          dataCache[championId] = data;
+        } catch (err) {
+          data = null; // no file exists
+        }
+      }
+
+      // Render with the fetched data
+      renderChampionInfo(championId, championName, data);
+    }
+
+    function renderChampionInfo(championId, championName, data) {
+      const infoPanel = document.getElementById('info-panel');
 
       let html = `<div class="champion-detail">`;
       html += `<h2>${championName}</h2>`;
@@ -493,7 +620,7 @@
           html += `<div class="info-slot"><h3>Matchup Difficulty</h3><span class="difficulty-badge" style="background:#2a2a18; color:#f0c27a;">${data.difficulty || '?'}</span></div>`;
         }
 
-        html += `<div class="info-slot"><h3>General Tip</h3><p>${data.generalTip}</p></div>`;
+        html += `<div class="info-slot"><h3>General Tip</h3><p>${data.generalTip || ''}</p></div>`;
 
         html += `<div class="phases-row">`;
         html += `<div class="phase-slot"><h4>Levels 1‑5</h4><p>${data.earlyGame || 'No info yet.'}</p></div>`;
@@ -501,6 +628,7 @@
         html += `<div class="phase-slot"><h4>Levels 11‑18</h4><p>${data.lateGame || 'No info yet.'}</p></div>`;
         html += `</div>`;
 
+        // Items
         if (data.items && Array.isArray(data.items) && data.items.length > 0) {
           html += `<div class="info-slot"><h3>Recommended Items</h3><div class="items-row">`;
           data.items.forEach(itemUrl => {
@@ -513,13 +641,51 @@
           html += `</div>`;
         }
 
-        if (data.runesImage) {
+        // Runes (in-game layout)
+        if (data.runes && typeof data.runes === 'object') {
+          html += `<div class="info-slot"><h3>Recommended Runes</h3>`;
+          html += `<div class="rune-page-wrapper"><div class="rune-page">`;
+
+          if (data.runes.primary) {
+            const p = data.runes.primary;
+            html += `<div class="rune-tree"><h4>`;
+            if (p.icon) html += `<img src="${p.icon}" class="tree-icon" alt="tree" />`;
+            html += `${p.name || 'Primary'}</h4>`;
+            if (p.keystone) html += `<div class="keystone-slot"><img src="${p.keystone}" alt="Keystone" /></div>`;
+            if (p.row1) html += `<div class="rune-row"><img src="${p.row1}" alt="Row 1" /></div>`;
+            if (p.row2) html += `<div class="rune-row"><img src="${p.row2}" alt="Row 2" /></div>`;
+            if (p.row3) html += `<div class="rune-row"><img src="${p.row3}" alt="Row 3" /></div>`;
+            html += `</div>`;
+          }
+
+          if (data.runes.secondary) {
+            const s = data.runes.secondary;
+            html += `<div class="rune-tree"><h4>`;
+            if (s.icon) html += `<img src="${s.icon}" class="tree-icon" alt="tree" />`;
+            html += `${s.name || 'Secondary'}</h4>`;
+            html += `<div class="secondary-runes">`;
+            if (s.rune1) html += `<img src="${s.rune1}" alt="Sec Rune 1" />`;
+            if (s.rune2) html += `<img src="${s.rune2}" alt="Sec Rune 2" />`;
+            html += `</div></div>`;
+          }
+
+          html += `</div></div>`;
+
+          if (data.runes.stats && Array.isArray(data.runes.stats) && data.runes.stats.length > 0) {
+            html += `<div class="stats-row">`;
+            data.runes.stats.forEach(statUrl => {
+              html += `<img src="${statUrl}" alt="Stat" />`;
+            });
+            html += `</div>`;
+          }
+          html += `</div>`;
+        } else if (data.runesImage) {
           html += `<div class="info-slot"><h3>Recommended Runes</h3>`;
           html += `<img src="${data.runesImage}" alt="Runes vs ${championName}" class="build-image" loading="lazy" />`;
           html += `</div>`;
         }
 
-        html += `<div class="info-slot"><h3>Matchup Note</h3><p>${data.matchupNote}</p></div>`;
+        html += `<div class="info-slot"><h3>Matchup Note</h3><p>${data.matchupNote || ''}</p></div>`;
       } else {
         html += `<div class="info-slot"><h3>Coming Soon</h3><p>No guide written yet. <a href="champions/${championId}.html" style="color:#c8aa6e;">Go to full page</a> to add your notes.</p></div>`;
       }
