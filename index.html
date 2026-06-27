@@ -276,21 +276,6 @@
       margin-top: 0.5rem;
     }
 
-    .full-guide-link {
-      display: inline-block;
-      margin-top: 1.5rem;
-      color: #c8aa6e;
-      text-decoration: none;
-      border: 1px solid #c8aa6e;
-      padding: 0.5rem 1.2rem;
-      border-radius: 6px;
-      transition: background 0.2s;
-    }
-
-    .full-guide-link:hover {
-      background: rgba(200, 170, 110, 0.15);
-    }
-
     /* Rune page layout */
     .rune-page {
       display: flex;
@@ -454,11 +439,8 @@
     //  GLOBALS
     // =============================================
     let allChampionItems = [];
-    const dataCache = {}; // cache fetched JSON by championId
+    const dataCache = {};
 
-    // =============================================
-    //  FETCH AND BUILD CHAMPION LIST
-    // =============================================
     (async () => {
       const championList = document.getElementById('champion-list');
 
@@ -500,7 +482,6 @@
           allChampionItems.push(item);
         });
 
-        // Preload splash images
         preloadSplashImages(champions);
         setupSearch();
 
@@ -579,14 +560,9 @@
     // =============================================
     async function loadChampionInfo(championId, championName) {
       const infoPanel = document.getElementById('info-panel');
-
-      // Show loading state
       infoPanel.innerHTML = `<div class="champion-detail"><h2>${championName}</h2><p class="placeholder-message">⏳ Loading guide...</p></div>`;
-
-      // Update splash immediately
       setSplashBackground(championId);
 
-      // Fetch data (use cache if available)
       let data;
       if (dataCache[championId]) {
         data = dataCache[championId];
@@ -597,11 +573,10 @@
           data = await res.json();
           dataCache[championId] = data;
         } catch (err) {
-          data = null; // no file exists
+          data = null;
         }
       }
 
-      // Render with the fetched data
       renderChampionInfo(championId, championName, data);
     }
 
@@ -678,7 +653,7 @@
             });
             html += `</div>`;
           }
-          html += `</div>`;
+          html += `</div>`; // close info-slot
         } else if (data.runesImage) {
           html += `<div class="info-slot"><h3>Recommended Runes</h3>`;
           html += `<img src="${data.runesImage}" alt="Runes vs ${championName}" class="build-image" loading="lazy" />`;
@@ -687,11 +662,8 @@
 
         html += `<div class="info-slot"><h3>Matchup Note</h3><p>${data.matchupNote || ''}</p></div>`;
       } else {
-        html += `<div class="info-slot"><h3>Coming Soon</h3><p>No guide written yet. <a href="champions/${championId}.html" style="color:#c8aa6e;">Go to full page</a> to add your notes.</p></div>`;
+        html += `<div class="info-slot"><h3>Coming Soon</h3><p>No guide written yet.</p></div>`;
       }
-
-      html += `<a class="full-guide-link" href="champions/${championId}.html">📄 View full guide →</a>`;
-      html += `</div>`;
 
       infoPanel.innerHTML = html;
     }
