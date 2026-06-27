@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How to Play Against Every Champion</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #0a0a0f;
+      color: #e0d7c6;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.2rem;
+      margin-bottom: 2rem;
+      color: #c8aa6e;
+      text-shadow: 0 0 10px rgba(200, 170, 110, 0.3);
+    }
+
+    .champion-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 1rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .champion-card {
+      background: #1b1b2a;
+      border: 1px solid #32281c;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0.8rem 0.5rem 0.7rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .champion-card:hover {
+      transform: translateY(-4px);
+      border-color: #c8aa6e;
+      box-shadow: 0 8px 20px rgba(200, 170, 110, 0.2);
+    }
+
+    .champion-card img {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #4a3e2c;
+      background: #0f0f1a;
+      margin-bottom: 0.6rem;
+      transition: border-color 0.2s;
+    }
+
+    .champion-card:hover img {
+      border-color: #c8aa6e;
+    }
+
+    .champion-card span {
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-align: center;
+      color: #f0e6d2;
+    }
+
+    .loading-text {
+      text-align: center;
+      grid-column: 1 / -1;
+      padding: 3rem;
+      font-size: 1.2rem;
+      color: #8b7a62;
+    }
+  </style>
+</head>
+<body>
+  <h1>⚔️ How to Play Against Every Champion</h1>
+  <div id="champion-grid" class="champion-grid">
+    <p class="loading-text">Loading champion list…</p>
+  </div>
+
+  <script>
+    (async () => {
+      const grid = document.getElementById('champion-grid');
+
+      try {
+        // 1. Get latest Data Dragon version
+        const versionsRes = await fetch('https://ddragon.leagueoflegends.com/api/versions.json');
+        const versions = await versionsRes.json();
+        const latestVersion = versions[0];
+
+        // 2. Fetch all champions
+        const championsRes = await fetch(
+          `https://ddragon.leagueoflegends.com/cdn/${latestVersion}/data/en_US/champion.json`
+        );
+        const championsData = await championsRes.json();
+        const champions = Object.values(championsData.data);
+
+        // Clear loading text
+        grid.innerHTML = '';
+
+        // 3. Create a card for each champion
+        champions.forEach(champ => {
+          const card = document.createElement('a');
+          card.href = `champions/${champ.id}.html`;   // e.g., champions/Aatrox.html
+          card.className = 'champion-card';
+
+          const img = document.createElement('img');
+          img.src = `https://ddragon.leagueoflegends.com/cdn/${latestVersion}/img/champion/${champ.image.full}`;
+          img.alt = champ.name;
+          img.loading = 'lazy';
+
+          const name = document.createElement('span');
+          name.textContent = champ.name;
+
+          card.appendChild(img);
+          card.appendChild(name);
+          grid.appendChild(card);
+        });
+
+      } catch (error) {
+        grid.innerHTML = '<p class="loading-text">❌ Could not load champions. Check your internet connection.</p>';
+        console.error(error);
+      }
+    })();
+  </script>
+</body>
+</html>
