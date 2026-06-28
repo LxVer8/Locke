@@ -162,7 +162,7 @@
       overflow-y: auto;
       background: rgba(13, 13, 20, 0.7);
       backdrop-filter: blur(4px);
-      position: relative;          /* required for spinner placement */
+      position: relative;
     }
 
     /* Subtle loading spinner – appears after 300ms */
@@ -194,12 +194,6 @@
     .champion-detail {
       max-width: 900px;
       margin: 0 auto;
-      animation: fadeIn 0.25s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
     }
 
     .champion-detail h2 {
@@ -446,6 +440,11 @@
     let runeMap = {};
     let currentPatchVersion = '';
 
+    // ---- CUSTOM SPLASH OVERRIDES ----
+    const CUSTOM_SPLASHES = {
+      "Fiddlesticks": "images/splashes/Fiddlesticks.jpg"   // new splash image in your repo
+    };
+
     // Abbreviations mapping (unchanged)
     const ABBREVIATIONS = [
       "Aurelion Sol asol",
@@ -624,7 +623,9 @@
     function preloadSplashImages(champions) {
       champions.forEach(champ => {
         const img = new Image();
-        img.src = `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${champ.id}_0.jpg?v=${currentPatchVersion}`;
+        // Check for custom splash, otherwise use CDN with cache busting
+        img.src = CUSTOM_SPLASHES[champ.id] ||
+                  `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${champ.id}_0.jpg?v=${currentPatchVersion}`;
       });
     }
 
@@ -681,12 +682,14 @@
         splashBg.classList.add('no-splash');
         return;
       }
-      const splashUrl = `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${championId}_0.jpg?v=${currentPatchVersion}`;
+      // Use custom splash if available, otherwise CDN
+      const splashUrl = CUSTOM_SPLASHES[championId] ||
+        `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${championId}_0.jpg?v=${currentPatchVersion}`;
       splashBg.style.backgroundImage = `url('${splashUrl}')`;
       splashBg.classList.remove('no-splash');
     }
 
-    // --- UPDATED: Subtle loading indicator ---
+    // --- Subtle loading indicator ---
     async function loadChampionInfo(championId, championName) {
       const infoPanel = document.getElementById('info-panel');
       setSplashBackground(championId);
