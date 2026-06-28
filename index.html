@@ -594,26 +594,26 @@
       }
     ];
 
-    // ---------- COUNTER HELPERS ----------
-    const COUNTER_BASE = 'https://api.countapi.xyz';
-    const TOTAL_KEY = 'locke-bible-total-champion-visits';
-    function champCounterKey(champId) { return `locke-bible-champ-${champId}`; }
+    // ---------- COUNTER API (counterapi.dev) ----------
+    const COUNTER_BASE = 'https://api.counterapi.dev/v1/locke-bible';
+    const TOTAL_KEY = 'total';
+    function champCounterKey(champId) { return `champ-${champId.toLowerCase()}`; }
 
     async function fetchCounterValue(key) {
       try {
-        const res = await fetch(`${COUNTER_BASE}/get/${key}`);
+        const res = await fetch(`${COUNTER_BASE}/${key}`);
         if (!res.ok) throw new Error('not found');
         const data = await res.json();
-        return data.value || 0;
+        return data.count || 0;
       } catch { return 0; }
     }
 
     async function hitCounter(key) {
       try {
-        const res = await fetch(`${COUNTER_BASE}/hit/${key}`);
+        const res = await fetch(`${COUNTER_BASE}/${key}/hit`, { method: 'POST' });
         if (!res.ok) throw new Error('hit failed');
         const data = await res.json();
-        return data.value || 0;
+        return data.count || 0;
       } catch { return null; }
     }
 
@@ -642,7 +642,7 @@
       }
     }
 
-    // ---------- INTRO DATA ----------
+    // ---------- LOAD INTRO DATA ----------
     async function loadIntroData() {
       try {
         const res = await fetch('intro.json');
@@ -680,6 +680,7 @@
       infoPanel.innerHTML = html;
     }
 
+    // ---------- RESET TO INTRO ----------
     function resetToIntro() {
       if (activeChampionItem) {
         activeChampionItem.classList.remove('active');
