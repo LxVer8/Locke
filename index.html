@@ -578,13 +578,13 @@
       html += `<h2>${championName}</h2>`;
 
       if (data) {
-        // ---------- UPDATED: Matchup Difficulty with split layout ----------
+        // ---------- Matchup Difficulty (original style) + Video Guide (right-aligned) ----------
         html += `<div class="info-slot">`;
-        html += `<h3>Matchup Difficulty</h3>`;
-        html += `<div class="phases-row difficulty-video-row">`;
+        html += `<div class="difficulty-video-row">`;
 
-        // Left column – difficulty badge
-        html += `<div class="phase-slot"><h4>Difficulty</h4>`;
+        // Left side – difficulty heading and badge (no extra card)
+        html += `<div class="difficulty-left">`;
+        html += `<h3>Matchup Difficulty</h3>`;
         const diffNum = parseFloat(data.difficulty);
         if (!isNaN(diffNum)) {
           const { bg, text } = getDifficultyColor(diffNum);
@@ -594,45 +594,23 @@
         }
         html += `</div>`;
 
-        function getYouTubeThumbnail(url) {
-          try {
-            const urlObj = new URL(url);
-            let videoId = null;
-            if (urlObj.hostname.includes('youtube.com') && urlObj.pathname === '/watch') {
-              videoId = urlObj.searchParams.get('v');
-            } else if (urlObj.hostname === 'youtu.be') {
-              videoId = urlObj.pathname.slice(1).split('/')[0];
-            }
-            if (videoId) {
-              // Use 16:9 thumbnail (no black bars) – fallback to hqdefault if mqdefault fails
-              // mqdefault = 320x180, 16:9, no letterboxing
-              return `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
-            }
-          } catch (e) {}
-          return null;
-        }
-
-        // Right column – video guide
-        html += `<div class="phase-slot"><h4>Video Guide`;
+        // Right side – video guide (thumbnail stays as is)
+        html += `<div class="video-right">`;
+        html += `<h4>Video Guide`;
         if (data.videoAuthor) {
           html += ` <span class="video-author-inline">by ${data.videoAuthor}</span>`;
         }
         html += `</h4>`;
-
         if (data.videoUrl) {
-          // Determine thumbnail URL
           let thumbnailUrl = data.videoThumbnail || null;
           if (!thumbnailUrl) {
             thumbnailUrl = getYouTubeThumbnail(data.videoUrl);
           }
-
           if (thumbnailUrl) {
-            // Thumbnail only – clickable image
             html += `<a href="${data.videoUrl}" target="_blank" rel="noopener" class="video-thumbnail-link">`;
             html += `<img src="${thumbnailUrl}" alt="${data.videoTitle || 'Matchup Video'}" class="video-thumbnail-img" loading="lazy">`;
             html += `</a>`;
           } else {
-            // Fallback pill badge
             html += `<a href="${data.videoUrl}" target="_blank" rel="noopener" class="video-badge" title="${data.videoUrl}">${data.videoTitle || 'Watch Matchup Video'}</a>`;
           }
         } else {
@@ -640,7 +618,7 @@
         }
         html += `</div>`;
 
-        html += `</div>`; // close matchup-split
+        html += `</div>`; // close difficulty-video-row
         html += `</div>`; // close info-slot
 
         html += `<div class="info-slot"><h3>General Tip</h3><p>${data.generalTip || ''}</p></div>`;
