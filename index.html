@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>How to Play Against Every Champion</title>
+  <title>The Locke Bible</title>
   <style>
     * {
       box-sizing: border-box;
@@ -402,7 +402,7 @@
   <div id="splash-bg" class="splash-background no-splash"></div>
 
   <header>
-    <h1>⚔️ How to Play Against Every Champion</h1>
+    <h1>The Locke Bible</h1>
     <div class="header-search">
       <input type="text" id="search-input" placeholder="🔍 Search champion..." autocomplete="off" />
     </div>
@@ -413,7 +413,7 @@
       <div id="champion-list" class="champion-list"></div>
     </div>
     <div id="info-panel" class="info-panel">
-      <p class="placeholder-message">👈 Click a champion to see matchup info</p>
+      <p class="placeholder-message">Click a champion to see matchup info</p>
     </div>
   </div>
 
@@ -421,26 +421,95 @@
     // ---------- GLOBALS ----------
     let allChampionItems = [];
     const dataCache = {};
+    const championSearchTerms = {};   // championId -> array of lower case search terms
     let runeData = null;
     let runeMap = {};
 
-    // Stat shard row definitions – now with Health Flat, Tenacity, Health Scaling as requested
+    // ---------- ABBREVIATIONS (exactly the list you provided) ----------
+    const ABBREVIATIONS = [
+      "Aurelion Sol asol",
+      "Bel'Veth belveth bv",
+      "Cho'Gath chogath",
+      "Dr Mundo mundo doctor",
+      "Gangplank gp",
+      "Jarvan IV IV j4",
+      "Kai'Sa kaisa ks",
+      "Kha'Zix khazix kz",
+      "Kog'Maw kogmaw km",
+      "K'Sante ksante ks",
+      "LeBlanc lb",
+      "Master Yi yi",
+      "Miss Fortune mf",
+      "Reksai rek'sai rs",
+      "renata glasc rg",
+      "Tahm Kench tk",
+      "Twisted Fate tf",
+      "Vel'Koz velkoz vk"
+    ];
+
+    // Parse abbreviations into a map: abbreviation -> full name
+    const ABBREV_MAP = {};
+    ABBREVIATIONS.forEach(line => {
+      const parts = line.trim().split(/\s+/);
+      const fullName = parts[0] + (parts.length > 1 ? ' ' + parts.slice(1).filter(w => w.length > 2 || w === 'IV' ? true : false).join(' ') : '');
+      // Actually, the first token is the full name; subsequent are the abbreviations.
+      // Simpler: split all words; first word is full name; rest are abbreviations.
+      const tokens = line.trim().split(/\s+/);
+      const championFullName = tokens[0];  // single word like "Aurelion" but sometimes multi-word: "Aurelion Sol" is two tokens...
+      // So we need a different approach: the first token is the start of the full name, and we continue until we hit a token that is all lower case? No.
+      // Better: The lines are structured as: full name (possibly multiple words) followed by abbreviations (all lower case).
+      // We can split all tokens, then identify the last upper/mixed case token as end of full name.
+      // For simplicity, let's manually define abbreviations map ourselves from the list.
+      // Instead of parsing, I'll directly create the mapping from the provided examples.
+    });
+
+    // Manual mapping from abbreviations to exact champion name (as it appears in Data Dragon)
+    const ABBREV_TO_CHAMP = {
+      "asol": "Aurelion Sol",
+      "belveth": "Bel'Veth",
+      "bv": "Bel'Veth",
+      "chogath": "Cho'Gath",
+      "mundo": "Dr. Mundo",      // Data Dragon uses "Dr. Mundo"
+      "doctor": "Dr. Mundo",
+      "gp": "Gangplank",
+      "IV": "Jarvan IV",
+      "j4": "Jarvan IV",
+      "kaisa": "Kai'Sa",
+      "ks": ["Kai'Sa", "K'Sante"],   // ambiguous, we'll handle separately
+      "khazix": "Kha'Zix",
+      "kz": "Kha'Zix",
+      "kogmaw": "Kog'Maw",
+      "km": "Kog'Maw",
+      "ksante": "K'Sante",
+      "lb": "LeBlanc",
+      "yi": "Master Yi",
+      "mf": "Miss Fortune",
+      "rek'sai": "Rek'Sai",
+      "rs": "Rek'Sai",
+      "rg": "Renata Glasc",
+      "tk": "Tahm Kench",
+      "tf": "Twisted Fate",
+      "velkoz": "Vel'Koz",
+      "vk": "Vel'Koz"
+    };
+
+    // Stat shard row definitions
     const STAT_ROWS = [
-      { // Offense
+      {
         options: [
           { name: "Adaptive Force", file: "Adaptive_Force" },
           { name: "Attack Speed", file: "Attack_Speed" },
           { name: "Ability Haste", file: "Ability_Haste" }
         ]
       },
-      { // Flex
+      {
         options: [
           { name: "Adaptive Force", file: "Adaptive_Force" },
           { name: "Movement Speed", file: "Movement_Speed" },
           { name: "Health Scaling", file: "Health_Scaling" }
         ]
       },
-      { // Defense – updated per request
+      {
         options: [
           { name: "Health Flat", file: "Health_Flat" },
           { name: "Tenacity", file: "Tenacity" },
@@ -503,6 +572,25 @@
           item.dataset.championId = champ.id;
           item.dataset.championName = champ.name.toLowerCase();
 
+          // Build search terms: full name + abbreviations
+          const searchTerms = new Set();
+          searchTerms.add(champ.name.toLowerCase());
+
+          // Add abbreviations that point to this champion
+          for (const [abbr, target] of Object.entries(ABBREV_TO_CHAMP)) {
+            if (Array.isArray(target)) {
+              // ambiguous, check if champ name matches any
+              if (target.some(t => t.toLowerCase() === champ.name.toLowerCase())) {
+                searchTerms.add(abbr.toLowerCase());
+              }
+            } else {
+              if (target.toLowerCase() === champ.name.toLowerCase()) {
+                searchTerms.add(abbr.toLowerCase());
+              }
+            }
+          }
+          championSearchTerms[champ.id] = Array.from(searchTerms);
+
           const img = document.createElement('img');
           img.src = `https://ddragon.leagueoflegends.com/cdn/${latestVersion}/img/champion/${champ.image.full}`;
           img.alt = champ.name;
@@ -549,8 +637,9 @@
         let visibleCount = 0;
 
         allChampionItems.forEach(item => {
-          const name = item.dataset.championName;
-          if (query === '' || name.includes(query)) {
+          const terms = championSearchTerms[item.dataset.championId] || [item.dataset.championName];
+          const matches = query === '' || terms.some(term => term.includes(query));
+          if (matches) {
             item.style.display = 'flex';
             visibleCount++;
           } else {
@@ -573,16 +662,16 @@
     }
 
     function getDifficultyColor(value) {
-      if (value >= 10) return { bg: '#cc0000', text: 'white' };
-      if (value >= 9)  return { bg: '#ea4335', text: 'white' };
-      if (value >= 8)  return { bg: '#ea6435', text: 'white' };
-      if (value >= 7)  return { bg: '#e69138', text: 'white' };
+      if (value >= 10) return { bg: '#cc0000', text: 'black' };
+      if (value >= 9)  return { bg: '#ea4335', text: 'black' };
+      if (value >= 8)  return { bg: '#ea6435', text: 'black' };
+      if (value >= 7)  return { bg: '#e69138', text: 'black' };
       if (value >= 6)  return { bg: '#f1c232', text: 'black' };
       if (value >= 5)  return { bg: '#ffd966', text: 'black' };
       if (value >= 4)  return { bg: '#d7e455', text: 'black' };
       if (value >= 3)  return { bg: '#90d542', text: 'black' };
-      if (value >= 2)  return { bg: '#4da029', text: 'white' };
-      return              { bg: '#337432', text: 'white' };
+      if (value >= 2)  return { bg: '#4da029', text: 'black' };
+      return              { bg: '#337432', text: 'black' };
     }
 
     function setSplashBackground(championId) {
@@ -619,7 +708,7 @@
       renderChampionInfo(championId, championName, data);
     }
 
-    // ---------- FULL RUNE PAGE RENDERER (local images, side-by-side with stats) ----------
+    // ---------- FULL RUNE PAGE RENDERER (unchanged) ----------
     function renderFullRunePage(runes) {
       if (!runeData || !runes.primary) return '';
 
@@ -636,7 +725,6 @@
 
       let html = '';
 
-      // Primary tree
       if (primaryTree) {
         html += `<div class="rune-tree">`;
         html += `<h4><img src="${getTreeIconPath(primaryTree.name)}" class="tree-icon" alt=""/>${primaryTree.name}</h4>`;
@@ -661,10 +749,9 @@
           html += `</div>`;
         }
 
-        html += `</div>`; // end primary tree
+        html += `</div>`;
       }
 
-      // Secondary tree (full rows)
       if (secondaryTree && runes.secondary) {
         html += `<div class="rune-tree">`;
         html += `<h4><img src="${getTreeIconPath(secondaryTree.name)}" class="tree-icon" alt=""/>${secondaryTree.name}</h4>`;
@@ -680,10 +767,9 @@
           html += `</div>`;
         }
 
-        html += `</div>`; // end secondary tree
+        html += `</div>`;
       }
 
-      // ---------- Stat shards (third column with updated options) ----------
       let statsTreeHTML = '';
       if (runes.stats && Array.isArray(runes.stats) && runes.stats.length > 0) {
         statsTreeHTML = `<div class="rune-tree">`;
@@ -716,7 +802,6 @@
       html += `<h2>${championName}</h2>`;
 
       if (data) {
-        // Difficulty
         const diffNum = parseFloat(data.difficulty);
         if (!isNaN(diffNum)) {
           const { bg, text } = getDifficultyColor(diffNum);
@@ -727,22 +812,18 @@
 
         html += `<div class="info-slot"><h3>General Tip</h3><p>${data.generalTip || ''}</p></div>`;
 
-        // Phase info
         html += `<div class="phases-row">`;
         html += `<div class="phase-slot"><h4>Levels 1‑5</h4><p>${data.earlyGame || 'No info yet.'}</p></div>`;
         html += `<div class="phase-slot"><h4>Levels 6‑10</h4><p>${data.midGame || 'No info yet.'}</p></div>`;
         html += `<div class="phase-slot"><h4>Levels 11‑18</h4><p>${data.lateGame || 'No info yet.'}</p></div>`;
         html += `</div>`;
 
-        // ========== ITEMS (split into starter / core / situational) ==========
+        // Items
         if (data.items) {
-          // New structured format: { starter: [...], core: [...], situational: [...] }
           if (typeof data.items === 'object' && !Array.isArray(data.items)) {
             html += `<div class="info-slot"><h3>Recommended Items</h3><div class="phases-row">`;
-
             const itemPhases = ['starter', 'core', 'situational'];
             const labels = ['Starter Items', 'Core Items', 'Situational Items'];
-
             itemPhases.forEach((phase, idx) => {
               const phaseItems = data.items[phase] || [];
               html += `<div class="phase-slot"><h4>${labels[idx]}</h4><div class="items-row">`;
@@ -751,11 +832,8 @@
               });
               html += `</div></div>`;
             });
-
-            html += `</div></div>`; // close phases-row and info-slot
-          }
-          // Old flat array format (fallback)
-          else if (Array.isArray(data.items) && data.items.length > 0) {
+            html += `</div></div>`;
+          } else if (Array.isArray(data.items) && data.items.length > 0) {
             html += `<div class="info-slot"><h3>Recommended Items</h3><div class="items-row">`;
             data.items.forEach(url => {
               html += `<img src="${url}" alt="Item" class="item-icon" loading="lazy" />`;
@@ -768,7 +846,7 @@
           html += `</div>`;
         }
 
-        // ========== RUNES ==========
+        // Runes
         html += `<div class="info-slot"><h3>Recommended Runes</h3>`;
         try {
           if (data.runes) {
