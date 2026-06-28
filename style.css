@@ -563,7 +563,7 @@ header h1 {
   font-style: italic;
 }
 
-/* Video badge – same pill shape as difficulty badge, but black background */
+/* Video badge – white pill with black text, white outline */
 .video-badge {
   display: inline-block;
   padding: 0.2rem 1rem;
@@ -573,18 +573,17 @@ header h1 {
   color: #000000;
   border: 2px solid #ffffff;
   text-decoration: none;
-  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  transition: background 0.2s, color 0.2s;
 }
 .video-badge:hover {
   background: #000000;
   color: #ffffff;
-  border-color: #ffffff;
 }
 
-/* Author credit – shown below the badge */
-.video-author {
-  margin-top: 0.3rem;
-  font-size: 0.8rem;
-  color: #8b7a62;
+/* Author credit – now appears inline after the heading */
+.video-author-inline {
+  font-size: 0.85rem;
+  color: #8b7a62;          /* same colour as before */
   font-style: italic;
+  font-weight: normal;
 }

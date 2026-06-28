@@ -595,15 +595,14 @@
         html += `</div>`;
 
         // Right column – video guide
-        html += `<div class="phase-slot"><h4>Video Guide</h4>`;
+        html += `<div class="phase-slot"><h4>Video Guide`;
+        if (data.videoAuthor) {
+          html += ` <span class="video-author-inline">by ${data.videoAuthor}</span>`;
+        }
+        html += `</h4>`;
         if (data.videoUrl) {
           const videoTitle = data.videoTitle || 'Watch Matchup Video';
-          // Pill‑shaped link (same outline as difficulty badge)
           html += `<a href="${data.videoUrl}" target="_blank" rel="noopener" class="video-badge">${videoTitle}</a>`;
-          // Author shown outside the badge
-          if (data.videoAuthor) {
-            html += `<div class="video-author">by ${data.videoAuthor}</div>`;
-          }
         } else {
           html += `<span class="no-video">No video</span>`;
         }
