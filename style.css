@@ -569,15 +569,16 @@ header h1 {
   padding: 0.2rem 1rem;
   border-radius: 20px;
   font-weight: bold;
-  background: #1a1a1a;
-  color: #f0c27a;
-  border: 1px solid #f0c27a;
+  background: #ffffff;
+  color: #000000;
+  border: 2px solid #ffffff;
   text-decoration: none;
-  transition: background 0.2s, color 0.2s;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
 .video-badge:hover {
-  background: #f0c27a;
-  color: #1a1a1a;
+  background: #000000;
+  color: #ffffff;
+  border-color: #ffffff;
 }
 
 /* Author credit – shown below the badge */
