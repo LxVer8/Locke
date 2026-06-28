@@ -595,3 +595,36 @@ header h1 {
   justify-content: center;
   align-items: center;
 }
+
+/* Three compact matchup zones inside the difficulty card */
+.matchup-zones {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.matchup-zone {
+  background: rgba(0,0,0,0.2);
+  border: 1px solid #2e2e3a;
+  border-radius: 8px;
+  padding: 0.4rem 0.6rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.matchup-zone-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #8b7a62;
+  font-weight: bold;
+}
+
+.matchup-zone-text {
+  font-size: 0.75rem;
+  color: #ddd6c8;
+  text-align: right;
+  max-width: 60%;
+}

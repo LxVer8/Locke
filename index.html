@@ -597,8 +597,9 @@
         // ---------- Matchup Difficulty (identical style to Summoner Spells & Abilities) ----------
         html += `<div class="info-slot"><h3>Matchup Difficulty</h3><div class="phases-row">`;
 
-        // Left card – Difficulty
-        html += `<div class="phase-slot difficulty-card"><h4>Difficulty</h4>`;
+        // Left card – Difficulty + 3 matchup zones
+        html += `<div class="phase-slot difficulty-card">`;
+        html += `<h4>Difficulty</h4>`;
         const diffNum = parseFloat(data.difficulty);
         if (!isNaN(diffNum)) {
           const { bg, text } = getDifficultyColor(diffNum);
@@ -606,6 +607,19 @@
         } else {
           html += `<span class="difficulty-badge" style="background:#2a2a18; color:#f0c27a;">${data.difficulty || '?'}</span>`;
         }
+
+        // Three smaller matchup info zones (only shown if data.matchupZones exists)
+        if (data.matchupZones && Array.isArray(data.matchupZones) && data.matchupZones.length === 3) {
+          html += `<div class="matchup-zones">`;
+          data.matchupZones.forEach(zone => {
+            html += `<div class="matchup-zone">`;
+            html += `<span class="matchup-zone-label">${zone.label || ''}</span>`;
+            html += `<span class="matchup-zone-text">${zone.text || ''}</span>`;
+            html += `</div>`;
+          });
+          html += `</div>`;
+        }
+
         html += `</div>`;
 
         // Right card – Video Guide (right-aligned)
