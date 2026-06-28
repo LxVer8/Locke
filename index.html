@@ -171,7 +171,7 @@
     }
 
     .champion-detail {
-      max-width: 800px;
+      max-width: 900px;
       margin: 0 auto;
       animation: fadeIn 0.25s ease;
     }
@@ -276,18 +276,17 @@
       margin-top: 0.5rem;
     }
 
-    /* Rune page layout (object style) */
+    /* ----- Full rune tree styles (local images) ----- */
     .rune-page {
       display: flex;
       gap: 2rem;
-      margin-bottom: 1.2rem;
       flex-wrap: wrap;
     }
 
     .rune-tree {
       flex: 1;
       min-width: 200px;
-      background: rgba(27, 27, 42, 0.7);
+      background: rgba(27, 27, 42, 0.4);
       border: 1px solid #2e2e3a;
       border-radius: 12px;
       padding: 1rem;
@@ -311,47 +310,62 @@
       border-radius: 4px;
     }
 
-    .keystone-slot {
+    .rune-slot-row {
       display: flex;
       justify-content: center;
-      margin-bottom: 0.8rem;
+      align-items: center;
+      gap: 8px;
+      margin: 6px 0;
     }
 
-    .keystone-slot img {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      border: 2px solid #c8aa6e;
-      background: #0a0a0f;
+    .rune-slot-row.keystone-row {
+      margin-bottom: 12px;
     }
 
-    .rune-row {
-      display: flex;
-      justify-content: center;
-      margin: 0.3rem 0;
-    }
-
-    .rune-row img {
+    .rune-option {
       width: 40px;
       height: 40px;
       border-radius: 50%;
-      border: 1px solid #4a3e2c;
+      border: 2px solid #4a3e2c;
       background: #0a0a0f;
+      object-fit: contain;
+      transition: transform 0.15s;
+    }
+
+    .rune-option.selected {
+      border-color: #c8aa6e;
+      filter: none;
+      opacity: 1;
+    }
+
+    .rune-option.unselected {
+      filter: grayscale(100%) brightness(0.6);
+      opacity: 0.5;
+    }
+
+    .keystone-option {
+      width: 60px;
+      height: 60px;
     }
 
     .secondary-runes {
       display: flex;
-      gap: 0.8rem;
+      gap: 1.5rem;
       justify-content: center;
-      margin-top: 0.5rem;
+      margin-top: 1rem;
     }
 
-    .secondary-runes img {
+    .secondary-rune {
       width: 48px;
       height: 48px;
       border-radius: 50%;
       border: 1px solid #4a3e2c;
       background: #0a0a0f;
+      object-fit: contain;
+    }
+
+    .secondary-rune.selected {
+      border-color: #c8aa6e;
     }
 
     .stats-row {
@@ -367,10 +381,6 @@
       border-radius: 50%;
       border: 1px solid #4a3e2c;
       background: #0a0a0f;
-    }
-
-    .rune-page-wrapper {
-      margin-bottom: 1.2rem;
     }
 
     @media (max-width: 700px) {
@@ -435,9 +445,50 @@
   </div>
 
   <script>
+    // ---------- GLOBALS ----------
     let allChampionItems = [];
     const dataCache = {};
+    let runeData = null;          // holds the full runesReforged.json data
+    let runeMap = {};             // flat map of rune ID -> rune info (includes name, icon)
 
+    // ---------- FETCH RUNE DEFINITIONS (once) ----------
+    (async function loadRuneData() {
+      try {
+        const versionsRes = await fetch('https://ddragon.leagueoflegends.com/api/versions.json');
+        const versions = await versionsRes.json();
+        const latestVersion = versions[0];
+        const runesRes = await fetch(`https://ddragon.leagueoflegends.com/cdn/${latestVersion}/data/en_US/runesReforged.json`);
+        runeData = await runesRes.json();
+        // Build flat map for easy lookup
+        runeData.forEach(tree => {
+          tree.slots.forEach(slot => {
+            slot.runes.forEach(rune => {
+              runeMap[rune.id] = {
+                ...rune,
+                iconUrl: `https://ddragon.leagueoflegends.com/cdn/img/${rune.icon}`   // for fallback (not used now)
+              };
+            });
+          });
+        });
+      } catch (e) {
+        console.error('Failed to load rune data', e);
+      }
+    })();
+
+    // ---------- SAFE FILE NAME HELPER (mimics fetch-runes.js) ----------
+    function safeFileName(name) {
+      return name
+        .trim()
+        .replace(/[^a-zA-Z0-9 \-\'\.]/g, '')
+        .replace(/\s+/g, '_')
+        .replace(/'/g, '')
+        .replace(/\.+/g, '_')
+        .replace(/_+/g, '_')
+        .replace(/^_|_$/g, '')
+        || 'unknown';
+    }
+
+    // ---------- BUILD CHAMPION LIST ----------
     (async () => {
       const championList = document.getElementById('champion-list');
 
@@ -574,6 +625,80 @@
       renderChampionInfo(championId, championName, data);
     }
 
+    // ---------- FULL RUNE PAGE RENDERER (local images) ----------
+    function renderFullRunePage(runes) {
+      if (!runeData || !runes.primary) return '';
+
+      const primaryTree = runeData.find(t => t.name === runes.primary.style);
+      const secondaryTree = runes.secondary ? runeData.find(t => t.name === runes.secondary.style) : null;
+
+      let html = `<div class="rune-page">`;
+
+      // Primary tree
+      if (primaryTree) {
+        html += `<div class="rune-tree">`;
+        const treeIconPath = `images/runes/${safeFileName(primaryTree.name)}.png`;
+        html += `<h4><img src="${treeIconPath}" class="tree-icon" alt=""/>${primaryTree.name}</h4>`;
+
+        // Keystone row
+        const keystoneSlot = primaryTree.slots[0];
+        html += `<div class="rune-slot-row keystone-row">`;
+        keystoneSlot.runes.forEach(rune => {
+          const imgPath = `images/runes/${safeFileName(rune.name)}.png`;
+          const isSelected = (rune.name === runes.primary.keystone);
+          html += `<img src="${imgPath}" class="rune-option keystone-option ${isSelected ? 'selected' : 'unselected'}" alt="${rune.name}"/>`;
+        });
+        html += `</div>`;
+
+        // Rows 1-3
+        for (let i = 1; i <= 3; i++) {
+          const slot = primaryTree.slots[i];
+          if (!slot) continue;
+          const selectedKey = i === 1 ? runes.primary.row1 : (i === 2 ? runes.primary.row2 : runes.primary.row3);
+          html += `<div class="rune-slot-row">`;
+          slot.runes.forEach(rune => {
+            const imgPath = `images/runes/${safeFileName(rune.name)}.png`;
+            const isSelected = (rune.name === selectedKey);
+            html += `<img src="${imgPath}" class="rune-option ${isSelected ? 'selected' : 'unselected'}" alt="${rune.name}"/>`;
+          });
+          html += `</div>`;
+        }
+
+        html += `</div>`; // end primary tree
+      }
+
+      // Secondary tree
+      if (secondaryTree && runes.secondary) {
+        html += `<div class="rune-tree">`;
+        const secTreeIconPath = `images/runes/${safeFileName(secondaryTree.name)}.png`;
+        html += `<h4><img src="${secTreeIconPath}" class="tree-icon" alt=""/>${secondaryTree.name}</h4>`;
+        html += `<div class="secondary-runes">`;
+        if (runes.secondary.rune1) {
+          const img1 = `images/runes/${safeFileName(runes.secondary.rune1)}.png`;
+          html += `<img src="${img1}" class="secondary-rune selected" alt="${runes.secondary.rune1}"/>`;
+        }
+        if (runes.secondary.rune2) {
+          const img2 = `images/runes/${safeFileName(runes.secondary.rune2)}.png`;
+          html += `<img src="${img2}" class="secondary-rune selected" alt="${runes.secondary.rune2}"/>`;
+        }
+        html += `</div>`;
+        html += `</div>`; // end secondary tree
+      }
+
+      html += `</div>`; // end rune-page
+
+      // Stat shards
+      if (runes.stats && Array.isArray(runes.stats) && runes.stats.length > 0) {
+        html += `<div class="stats-row">`;
+        runes.stats.forEach(statUrl => {
+          html += `<img src="${statUrl}" alt="Stat" />`;
+        });
+        html += `</div>`;
+      }
+
+      return html;
+    }
+
     function renderChampionInfo(championId, championName, data) {
       const infoPanel = document.getElementById('info-panel');
 
@@ -612,52 +737,19 @@
 
         // Runes
         if (data.runes) {
-          // Check if runes is an array -> simple row
-          if (Array.isArray(data.runes)) {
+          // New structured rune object (with style names, keystone, rows)
+          if (data.runes.primary && data.runes.primary.style) {
+            html += `<div class="info-slot"><h3>Recommended Runes</h3>`;
+            html += renderFullRunePage(data.runes);
+            html += `</div>`;
+          }
+          // Simple array fallback
+          else if (Array.isArray(data.runes)) {
             html += `<div class="info-slot"><h3>Recommended Runes</h3><div class="items-row">`;
             data.runes.forEach(runeUrl => {
               html += `<img src="${runeUrl}" alt="Rune" class="item-icon" loading="lazy" />`;
             });
             html += `</div></div>`;
-          }
-          // Otherwise, assume it's the in-game layout object
-          else if (typeof data.runes === 'object') {
-            html += `<div class="info-slot"><h3>Recommended Runes</h3>`;
-            html += `<div class="rune-page-wrapper"><div class="rune-page">`;
-
-            if (data.runes.primary) {
-              const p = data.runes.primary;
-              html += `<div class="rune-tree"><h4>`;
-              if (p.icon) html += `<img src="${p.icon}" class="tree-icon" alt="tree" />`;
-              html += `${p.name || 'Primary'}</h4>`;
-              if (p.keystone) html += `<div class="keystone-slot"><img src="${p.keystone}" alt="Keystone" /></div>`;
-              if (p.row1) html += `<div class="rune-row"><img src="${p.row1}" alt="Row 1" /></div>`;
-              if (p.row2) html += `<div class="rune-row"><img src="${p.row2}" alt="Row 2" /></div>`;
-              if (p.row3) html += `<div class="rune-row"><img src="${p.row3}" alt="Row 3" /></div>`;
-              html += `</div>`;
-            }
-
-            if (data.runes.secondary) {
-              const s = data.runes.secondary;
-              html += `<div class="rune-tree"><h4>`;
-              if (s.icon) html += `<img src="${s.icon}" class="tree-icon" alt="tree" />`;
-              html += `${s.name || 'Secondary'}</h4>`;
-              html += `<div class="secondary-runes">`;
-              if (s.rune1) html += `<img src="${s.rune1}" alt="Sec Rune 1" />`;
-              if (s.rune2) html += `<img src="${s.rune2}" alt="Sec Rune 2" />`;
-              html += `</div></div>`;
-            }
-
-            html += `</div></div>`;
-
-            if (data.runes.stats && Array.isArray(data.runes.stats) && data.runes.stats.length > 0) {
-              html += `<div class="stats-row">`;
-              data.runes.stats.forEach(statUrl => {
-                html += `<img src="${statUrl}" alt="Stat" />`;
-              });
-              html += `</div>`;
-            }
-            html += `</div>`;
           }
         } else if (data.runesImage) {
           html += `<div class="info-slot"><h3>Recommended Runes</h3>`;

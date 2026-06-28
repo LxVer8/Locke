@@ -1,22 +1,33 @@
 {
-    "difficulty": 8,
-    "generalTip": "Dodge his Q sweet spots. His sustain is weaker early if you avoid the blade.",
-    "earlyGame": "His Q is strong but cooldowns are long. Trade when his Q is down.",
-    "midGame": "He roams effectively with ult. Ward river and match his roams.",
-    "lateGame": "Falls off against tanks. Peel him off your backline.",
-    "matchupNote": "Build anti-heal early. Fight inside his Q range to make it harder for him to hit the edge.",
-    "items": [
-      "images/items/Thornmail.png",
-      "images/items/Plated_Steelcaps.png",
-      "images/items/Bramble_Vest.png",
-      "images/items/Randuins_Omen.png"
-    ],
-    "runes": [
-    "images/runes/Conqueror.png",
-    "images/runes/Triumph.png",
-    "images/runes/Legend_Alacrity.png",
-    "images/runes/Last_Stand.png",
-    "images/runes/Bone_Plating.png",
-    "images/runes/Revitalize.png"
-  ]
+  "difficulty": 8,
+  "generalTip": "Dodge his Q sweet spots. His sustain is weaker early if you avoid the blade.",
+  "earlyGame": "His Q is strong but cooldowns are long. Trade when his Q is down.",
+  "midGame": "He roams effectively with ult. Ward river and match his roams.",
+  "lateGame": "Falls off against tanks. Peel him off your backline.",
+  "matchupNote": "Build anti-heal early. Fight inside his Q range to make it harder for him to hit the edge.",
+  "items": [
+    "images/items/Thornmail.png",
+    "images/items/Plated_Steelcaps.png",
+    "images/items/Bramble_Vest.png",
+    "images/items/Randuins_Omen.png"
+  ],
+  "runes": {
+    "primary": {
+      "style": "Precision",
+      "keystone": "Conqueror",
+      "row1": "Triumph",
+      "row2": "Legend: Alacrity",
+      "row3": "Last Stand"
+    },
+    "secondary": {
+      "style": "Resolve",
+      "rune1": "Bone Plating",
+      "rune2": "Revitalize"
+    },
+    "stats": [
+      "images/runes/Adaptive_Force.png",
+      "images/runes/Adaptive_Force.png",
+      "images/runes/Health_Scaling.png"
+    ]
   }
+}
