@@ -313,6 +313,25 @@ header h1 {
   font-weight: bold;
 }
 
+/* Right‑align the difficulty + video row */
+.difficulty-video-row {
+  justify-content: flex-end;
+  gap: 1rem;                /* small gap between the two cards */
+}
+
+/* Make the left column only as wide as needed */
+.difficulty-video-row .phase-slot:first-child {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 0;
+}
+
+/* Right column keeps its natural width (the video thumbnail size) */
+.difficulty-video-row .phase-slot:last-child {
+  flex: 0 0 auto;
+  width: auto;
+}
+
 .phases-row {
   display: flex;
   gap: 1rem;
