@@ -1,0 +1,17 @@
+{
+  "title": "Welcome to The Locke Bible",
+  "sections": [
+    {
+      "heading": "What is this?",
+      "content": "A community‑driven guide on how to play against every League of Legends champion. Click any champion on the left to see detailed matchup tips, item builds, rune pages, and phase‑by‑phase advice."
+    },
+    {
+      "heading": "How to use",
+      "content": "Use the search bar to quickly find a champion. The guide shows recommended starter, core, and situational items, plus a full rune page. Difficulty ratings help you prepare before the game."
+    },
+    {
+      "heading": "Contributing",
+      "content": "If you'd like to add or improve a guide, check the GitHub repository. All champion data is stored as simple JSON files – pull requests are welcome!"
+    }
+  ]
+}

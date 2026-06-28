@@ -21,19 +21,18 @@
       background: #0a0a0f;
     }
 
-    /* Splash now sits inside main-layout, covering only the info panel area */
     .splash-background {
       position: absolute;
       top: 0;
-      left: 300px;               /* start after sidebar */
+      left: 300px;
       right: 0;
       bottom: 0;
-      background-size: 105%;     /* slightly larger to avoid white edges from blur */
+      background-size: 105%;
       background-position: center;
       background-repeat: no-repeat;
       background-color: rgba(10, 10, 15, 0.45);
       background-blend-mode: multiply;
-      filter: blur(4px);         /* soft blur */
+      filter: blur(4px);
       transition: background-image 0.15s ease;
       z-index: 0;
     }
@@ -90,7 +89,7 @@
       display: flex;
       flex: 1;
       overflow: hidden;
-      position: relative;        /* anchor for absolute splash */
+      position: relative;
     }
 
     .champion-sidebar {
@@ -102,7 +101,7 @@
       flex-direction: column;
       overflow: hidden;
       backdrop-filter: blur(8px);
-      z-index: 1;                /* above splash */
+      z-index: 1;
     }
 
     .champion-list {
@@ -159,7 +158,6 @@
       text-align: center;
     }
 
-    /* Info panel now sits above the blurry splash */
     .info-panel {
       flex: 1;
       padding: 2rem;
@@ -170,7 +168,6 @@
       z-index: 1;
     }
 
-    /* Subtle loading spinner – appears after 300ms */
     .info-panel.loading::after {
       content: "";
       position: absolute;
@@ -187,13 +184,6 @@
 
     @keyframes spin {
       to { transform: rotate(360deg); }
-    }
-
-    .placeholder-message {
-      text-align: center;
-      margin-top: 5rem;
-      font-size: 1.3rem;
-      color: #5a5244;
     }
 
     .champion-detail {
@@ -296,7 +286,6 @@
       margin-top: 0.5rem;
     }
 
-    /* ----- Full rune tree styles ----- */
     .rune-page {
       display: flex;
       gap: 1.5rem;
@@ -375,14 +364,13 @@
       align-items: center;
     }
 
-    /* On small screens, sidebar becomes top bar – splash fills full width */
     @media (max-width: 700px) {
       .main-layout {
         flex-direction: column;
         overflow: hidden;
       }
       .splash-background {
-        left: 0;                 /* full width */
+        left: 0;
         top: 0;
       }
       .champion-sidebar {
@@ -431,7 +419,6 @@
   </header>
 
   <div class="main-layout">
-    <!-- Blurry splash background -->
     <div id="splash-bg" class="splash-background" style="background-image: url('images/splashes/High_Noon_Locke.jpg');"></div>
 
     <div class="champion-sidebar">
@@ -439,7 +426,7 @@
     </div>
 
     <div id="info-panel" class="info-panel">
-      <p class="placeholder-message">Click a champion to see matchup info</p>
+      <!-- intro content will be rendered here by JS -->
     </div>
   </div>
 
@@ -451,8 +438,8 @@
     let runeData = null;
     let runeMap = {};
     let currentPatchVersion = '';
+    let introData = null;                          // will hold the intro JSON
 
-    // Custom splash overrides (Fiddlesticks uses new splash)
     const CUSTOM_SPLASHES = {
       "Fiddlesticks": "images/splashes/Fiddlesticks.jpg"
     };
@@ -532,7 +519,41 @@
       }
     ];
 
-    // Load rune definitions
+    // ---------- LOAD INTRO DATA ----------
+    async function loadIntroData() {
+      try {
+        const res = await fetch('intro.json');
+        if (!res.ok) throw new Error('intro.json not found');
+        introData = await res.json();
+      } catch (e) {
+        console.warn('Could not load intro.json, using fallback message.');
+        introData = null;
+      }
+      // Show intro right away if no champion is selected yet
+      if (!document.querySelector('.champion-detail')) {
+        renderIntro();
+      }
+    }
+
+    function renderIntro() {
+      const infoPanel = document.getElementById('info-panel');
+      if (!introData || !introData.sections || introData.sections.length === 0) {
+        infoPanel.innerHTML = `<p class="placeholder-message" style="text-align:center;margin-top:5rem;font-size:1.3rem;color:#5a5244;">Click a champion to see matchup info</p>`;
+        return;
+      }
+
+      let html = `<div class="champion-detail">`;
+      if (introData.title) {
+        html += `<h2>${introData.title}</h2>`;
+      }
+      introData.sections.forEach(section => {
+        html += `<div class="info-slot"><h3>${section.heading || ''}</h3><p>${section.content || ''}</p></div>`;
+      });
+      html += `</div>`;
+      infoPanel.innerHTML = html;
+    }
+
+    // ---------- LOAD RUNE DEFINITIONS ----------
     (async function loadRuneData() {
       try {
         const versionsRes = await fetch('https://ddragon.leagueoflegends.com/api/versions.json');
@@ -564,7 +585,7 @@
         || 'unknown';
     }
 
-    // Build champion list
+    // ---------- BUILD CHAMPION LIST ----------
     (async () => {
       const championList = document.getElementById('champion-list');
 
@@ -625,6 +646,9 @@
 
         preloadSplashImages(champions);
         setupSearch();
+
+        // After building the list, load the intro
+        loadIntroData();
 
       } catch (error) {
         championList.innerHTML = '<p style="color:red;padding:1rem;">Could not load champions.</p>';
