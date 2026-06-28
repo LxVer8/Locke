@@ -558,15 +558,16 @@ header h1 {
   font-style: italic;
 }
 
-/* Video thumbnail embed – small, clickable, no title */
+/* Video thumbnail embed – fixed 260x146 px, no black borders */
 .video-thumbnail-link {
-  display: inline-block;          /* shrink to fit the image */
+  display: inline-block;
+  width: 260px;
+  height: 146px;
   border: 1px solid #2e2e3a;
   border-radius: 10px;
   overflow: hidden;
   background: rgba(27, 27, 42, 0.8);
   transition: border-color 0.2s;
-  max-width: 260px;               /* smaller width – adjust to taste */
   margin-top: 0.5rem;
   text-decoration: none;
 }
@@ -577,7 +578,8 @@ header h1 {
 .video-thumbnail-img {
   display: block;
   width: 100%;
-  height: auto;                   /* respects aspect ratio, no black borders */
+  height: 100%;
+  object-fit: cover;      /* scales to cover, crops excess, no black bars */
 }
 
 /* Keep the fallback pill style (only used when no thumbnail) */
