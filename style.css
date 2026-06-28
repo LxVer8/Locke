@@ -334,6 +334,47 @@ header h1 {
   margin-top: 0.5rem;
 }
 
+/* Two-column summoner spells layout */
+.summoner-spells-row {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+.summoner-spells-col {
+  flex: 1;
+  min-width: 0;
+}
+.summoner-spells-col h3 {
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #8b7a62;
+  margin-bottom: 0.6rem;
+}
+
+/* Small number badge for ability order */
+.ability-icon-wrap {
+  position: relative;
+  display: inline-block;
+}
+.ability-icon-wrap::after {
+  content: attr(data-order);
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  background: #c8aa6e;
+  color: #0a0a0f;
+  font-size: 0.65rem;
+  font-weight: bold;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
 .item-icon {
   width: 56px;
   height: 56px;

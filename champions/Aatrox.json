@@ -5,10 +5,15 @@
   "midGame": "?",
   "lateGame": "?",
   "matchupNote": "?",
-  "summoners": [
+"summoners": [
   "images/summoners/Flash.png",
   "images/summoners/Ignite.png"
 ],
+  "abilityMaxOrder": [
+    "images/summoners/Locke_Ritual_Nails_HD.png",
+    "images/summoners/Locke_Soul_Ignition_HD.png",
+    "images/summoners/Locke_Ashen_Pursuit_HD.png"
+  ],
 "items": {
   "starter": [
     "images/items/Dorans_Ring.png",
