@@ -597,15 +597,16 @@
         function getYouTubeThumbnail(url) {
           try {
             const urlObj = new URL(url);
-            // Standard watch URL: youtube.com/watch?v=ID
+            let videoId = null;
             if (urlObj.hostname.includes('youtube.com') && urlObj.pathname === '/watch') {
-              const videoId = urlObj.searchParams.get('v');
-              if (videoId) return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+              videoId = urlObj.searchParams.get('v');
+            } else if (urlObj.hostname === 'youtu.be') {
+              videoId = urlObj.pathname.slice(1).split('/')[0];
             }
-            // Short youtu.be/ID
-            if (urlObj.hostname === 'youtu.be') {
-              const videoId = urlObj.pathname.slice(1).split('/')[0];
-              if (videoId) return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+            if (videoId) {
+              // Use 16:9 thumbnail (no black bars) – fallback to hqdefault if mqdefault fails
+              // mqdefault = 320x180, 16:9, no letterboxing
+              return `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
             }
           } catch (e) {}
           return null;
