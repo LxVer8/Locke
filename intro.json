@@ -1,17 +1,25 @@
 {
-  "title": "Welcome to The Locke Bible",
+  "title": "From dust - to dust.",
   "sections": [
     {
       "heading": "What is this?",
-      "content": "A community‑driven guide on how to play against every League of Legends champion. Click any champion on the left to see detailed matchup tips, item builds, rune pages, and phase‑by‑phase advice."
+      "content": "The Locke Bible is a community‑driven guide on how to play against every champion as Locke. The goal of this website is to store and showcase the information that Locke mains gathered since his release."
     },
     {
       "heading": "How to use",
-      "content": "Use the search bar to quickly find a champion. The guide shows recommended starter, core, and situational items, plus a full rune page. Difficulty ratings help you prepare before the game."
+      "content": "Use the search bar to quickly find a champion, or look them up in the left side of the screen. When you click on a champion, you will see a window with everything that is to know about them; from in which points of the game you win, to how to trade against them to not end up behind. Generally, the builds (Runes + Items) are not the main topic of this Bible. The important thing is the tips on how to play against the champion you are laning."
     },
     {
       "heading": "Contributing",
-      "content": "If you'd like to add or improve a guide, check the GitHub repository. All champion data is stored as simple JSON files – pull requests are welcome!"
+      "content": "If you'd like to add or improve a guide, feel free to DM LxVer8 on Discord or joining the [Locke Mains' Discord Server](https://discord.gg/Hhm93tvCVC) and [Locke Mains Reddit](https://www.reddit.com/r/Locke_Mains/). You can also create a pull request in [GitHub](https://github.com/LxVer8/Locke/pulls)."
+    },
+    {
+    "heading": "Ideas and future additions",
+    "content": "<ol><li>Before selecting a champion, show information about Locke players, linking their OP.GG and YouTube/Twitch channels, as well as links to the Locke Mains Discord Server and Reddit. Also add recommended guides.</li><li>Add a Trading Patterns section for each champion with basic trades that you could do against each champion based on which level the enemy and you are.</li><li>Find YouTube videos for each matchup and link them.</li><li>Add a section on each matchup that shows who did the last change and when was it made.</li><li>Add a History, so you can see how each matchup was played in the past.</li><li>Add the same disclaimer that we have here on the website.</li><li>Add a Contributors section where the names of everyone that helped the website in any way are going to be.</li></ol>"
+    }
+    {
+      "heading": "Disclaimer",
+      "content": "This website is a fan-made project and is not affiliated with, endorsed by, or sponsored by Riot Games, Inc. League of Legends and all related champions, images, artwork, names, and trademarks are the property of Riot Games, Inc. All content is used under Riot Games’ Fan Content Policy for the purpose of education and community discussion. This site is provided free of charge and exists solely as an informational resource for League of Legends players."
     }
   ]
 }

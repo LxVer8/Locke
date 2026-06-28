@@ -252,6 +252,12 @@
       line-height: 1.5;
     }
 
+        .info-content ul, .info-content ol {
+      padding-left: 1.5rem;
+      color: #ddd6c8;
+      line-height: 1.5;
+    }
+
     .difficulty-badge {
       display: inline-block;
       padding: 0.2rem 1rem;
@@ -602,7 +608,7 @@
         html += `<h2>${introData.title}</h2>`;
       }
       introData.sections.forEach(section => {
-        html += `<div class="info-slot"><h3>${section.heading || ''}</h3><p>${section.content || ''}</p></div>`;
+        html += `<div class="info-slot"><h3>${section.heading || ''}</h3><div class="info-content">${section.content || ''}</div></div>`;
       });
       html += `</div>`;
       infoPanel.innerHTML = html;
