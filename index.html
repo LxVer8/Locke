@@ -594,15 +594,50 @@
         }
         html += `</div>`;
 
+        function getYouTubeThumbnail(url) {
+          try {
+            const urlObj = new URL(url);
+            // Standard watch URL: youtube.com/watch?v=ID
+            if (urlObj.hostname.includes('youtube.com') && urlObj.pathname === '/watch') {
+              const videoId = urlObj.searchParams.get('v');
+              if (videoId) return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+            }
+            // Short youtu.be/ID
+            if (urlObj.hostname === 'youtu.be') {
+              const videoId = urlObj.pathname.slice(1).split('/')[0];
+              if (videoId) return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+            }
+          } catch (e) {}
+          return null;
+        }
+
         // Right column – video guide
         html += `<div class="phase-slot"><h4>Video Guide`;
         if (data.videoAuthor) {
           html += ` <span class="video-author-inline">by ${data.videoAuthor}</span>`;
         }
         html += `</h4>`;
+
         if (data.videoUrl) {
+          // Determine thumbnail URL
+          let thumbnailUrl = data.videoThumbnail || null;
+          if (!thumbnailUrl) {
+            // Attempt to get YouTube thumbnail from the URL
+            thumbnailUrl = getYouTubeThumbnail(data.videoUrl);
+          }
+
           const videoTitle = data.videoTitle || 'Watch Matchup Video';
-          html += `<a href="${data.videoUrl}" target="_blank" rel="noopener" class="video-badge">${videoTitle}</a>`;
+
+          if (thumbnailUrl) {
+            // Show thumbnail embed
+            html += `<a href="${data.videoUrl}" target="_blank" rel="noopener" class="video-thumbnail-link">`;
+            html += `<img src="${thumbnailUrl}" alt="${videoTitle}" class="video-thumbnail-img" loading="lazy">`;
+            html += `<span class="video-thumbnail-title">${videoTitle}</span>`;
+            html += `</a>`;
+          } else {
+            // Fallback to pill badge
+            html += `<a href="${data.videoUrl}" target="_blank" rel="noopener" class="video-badge" title="${data.videoUrl}">${videoTitle}</a>`;
+          }
         } else {
           html += `<span class="no-video">No video</span>`;
         }
