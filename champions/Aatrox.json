@@ -10,9 +10,9 @@
   "images/summoners/Ignite.png"
 ],
   "abilityMaxOrder": [
-    "images/summoners/Locke_Ritual_Nails_HD.png",
-    "images/summoners/Locke_Soul_Ignition_HD.png",
-    "images/summoners/Locke_Ashen_Pursuit_HD.png"
+    "images/summoners/Locke_Q.png",
+    "images/summoners/Locke_W.png",
+    "images/summoners/Locke_E.png"
   ],
 "items": {
   "starter": [

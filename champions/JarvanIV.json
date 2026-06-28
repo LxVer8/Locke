@@ -5,6 +5,15 @@
   "midGame": "?",
   "lateGame": "?",
   "matchupNote": "?",
+"summoners": [
+  "images/summoners/Flash.png",
+  "images/summoners/Ignite.png"
+],
+  "abilityMaxOrder": [
+    "images/summoners/Locke_Q.png",
+    "images/summoners/Locke_W.png",
+    "images/summoners/Locke_E.png"
+  ],
 "items": {
   "starter": [
     "images/items/Dorans_Ring.png",
@@ -12,7 +21,7 @@
   ],
   "core": [
     "images/items/Oblivion_Orb.png",
-    "images/items/Liche_Bane.png",
+    "images/items/Lich_Bane.png",
     "images/items/Shadowflame.png"
   ],
   "situational": [
@@ -24,12 +33,12 @@
     "primary": {
       "style": "Domination",
       "keystone": "Electrocute",
-      "row1": "Sudden_Impact",
-      "row2": "Sixth_Sense",
-      "row3": "Ultimate_Hunter"
+      "row1": "Sudden Impact",
+      "row2": "Sixth Sense",
+      "row3": "Ultimate Hunter"
     },
     "secondary": {
-      "style": "Valor",
+      "style": "Resolve",
       "rune1": "Bone Plating",
       "rune2": "Revitalize"
     },
