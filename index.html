@@ -581,19 +581,21 @@
         // ---------- UPDATED: Matchup Difficulty with split layout ----------
         html += `<div class="info-slot">`;
         html += `<h3>Matchup Difficulty</h3>`;
-        html += `<div class="matchup-split">`;
+        html += `<div class="phases-row">`;
 
-        // Left side: difficulty badge
+        // Left column – difficulty badge
+        html += `<div class="phase-slot"><h4>Difficulty</h4>`;
         const diffNum = parseFloat(data.difficulty);
         if (!isNaN(diffNum)) {
           const { bg, text } = getDifficultyColor(diffNum);
-          html += `<div class="matchup-left"><span class="difficulty-badge" style="background-color: ${bg}; color: ${text};">${diffNum} / 10</span></div>`;
+          html += `<span class="difficulty-badge" style="background-color: ${bg}; color: ${text};">${diffNum} / 10</span>`;
         } else {
-          html += `<div class="matchup-left"><span class="difficulty-badge" style="background:#2a2a18; color:#f0c27a;">${data.difficulty || '?'}</span></div>`;
+          html += `<span class="difficulty-badge" style="background:#2a2a18; color:#f0c27a;">${data.difficulty || '?'}</span>`;
         }
+        html += `</div>`;
 
-        // Right side: video link (if available)
-        html += `<div class="matchup-right">`;
+        // Right column – video link
+        html += `<div class="phase-slot"><h4>Video Guide</h4>`;
         if (data.videoUrl) {
           const videoTitle = data.videoTitle || 'Watch Matchup Video';
           html += `<a href="${data.videoUrl}" target="_blank" rel="noopener" class="matchup-video-link">${videoTitle}</a>`;
