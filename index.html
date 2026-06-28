@@ -21,20 +21,20 @@
       background: #0a0a0f;
     }
 
+    /* Splash now sits inside main-layout, covering only the info panel area */
     .splash-background {
-      position: fixed;
+      position: absolute;
       top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
+      left: 300px;               /* start after sidebar */
+      right: 0;
+      bottom: 0;
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
       background-color: rgba(10, 10, 15, 0.45);
       background-blend-mode: multiply;
       transition: background-image 0.15s ease;
-      /* Default background is set inline in the HTML */
+      z-index: 0;                /* behind the info panel content */
     }
 
     .splash-background.no-splash {
@@ -89,6 +89,7 @@
       display: flex;
       flex: 1;
       overflow: hidden;
+      position: relative;        /* anchor for absolute splash */
     }
 
     .champion-sidebar {
@@ -100,6 +101,7 @@
       flex-direction: column;
       overflow: hidden;
       backdrop-filter: blur(8px);
+      z-index: 1;                /* above splash */
     }
 
     .champion-list {
@@ -156,15 +158,18 @@
       text-align: center;
     }
 
+    /* Info panel now sits above the splash */
     .info-panel {
       flex: 1;
       padding: 2rem;
       overflow-y: auto;
-      background: rgba(13, 13, 20, 0.7);
-      backdrop-filter: blur(4px);
+      background: transparent;    /* no background, splash shows through */
+      backdrop-filter: none;
       position: relative;
+      z-index: 1;
     }
 
+    /* Subtle loading spinner – appears after 300ms */
     .info-panel.loading::after {
       content: "";
       position: absolute;
@@ -369,10 +374,15 @@
       align-items: center;
     }
 
+    /* On small screens, sidebar becomes top bar – splash fills full width */
     @media (max-width: 700px) {
       .main-layout {
         flex-direction: column;
         overflow: hidden;
+      }
+      .splash-background {
+        left: 0;                 /* full width */
+        top: 0;
       }
       .champion-sidebar {
         width: 100%;
@@ -412,9 +422,6 @@
   </style>
 </head>
 <body>
-  <!-- Default splash: High Noon Locke (change the path if your file name is different) -->
-  <div id="splash-bg" class="splash-background" style="background-image: url('images/splashes/High_Noon_Locke.jpg');"></div>
-
   <header>
     <h1>The Locke Bible</h1>
     <div class="header-search">
@@ -423,9 +430,13 @@
   </header>
 
   <div class="main-layout">
+    <!-- Splash background fills only the area right of the sidebar -->
+    <div id="splash-bg" class="splash-background" style="background-image: url('images/splashes/High_Noon_Locke.jpg');"></div>
+
     <div class="champion-sidebar">
       <div id="champion-list" class="champion-list"></div>
     </div>
+
     <div id="info-panel" class="info-panel">
       <p class="placeholder-message">Click a champion to see matchup info</p>
     </div>
@@ -679,14 +690,11 @@
       if (!championId) {
         // Reset to default High Noon Locke
         splashBg.style.backgroundImage = "url('images/splashes/High_Noon_Locke.jpg')";
-        splashBg.classList.add('no-splash');
         return;
       }
-      // Use custom splash if available, otherwise CDN
       const splashUrl = CUSTOM_SPLASHES[championId] ||
         `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${championId}_0.jpg?v=${currentPatchVersion}`;
       splashBg.style.backgroundImage = `url('${splashUrl}')`;
-      splashBg.classList.remove('no-splash');
     }
 
     // --- Subtle loading indicator ---
