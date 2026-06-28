@@ -28,13 +28,14 @@
       left: 300px;               /* start after sidebar */
       right: 0;
       bottom: 0;
-      background-size: cover;
+      background-size: 105%;     /* slightly larger to avoid white edges from blur */
       background-position: center;
       background-repeat: no-repeat;
       background-color: rgba(10, 10, 15, 0.45);
       background-blend-mode: multiply;
+      filter: blur(4px);         /* soft blur */
       transition: background-image 0.15s ease;
-      z-index: 0;                /* behind the info panel content */
+      z-index: 0;
     }
 
     .splash-background.no-splash {
@@ -158,12 +159,12 @@
       text-align: center;
     }
 
-    /* Info panel now sits above the splash */
+    /* Info panel now sits above the blurry splash */
     .info-panel {
       flex: 1;
       padding: 2rem;
       overflow-y: auto;
-      background: transparent;    /* no background, splash shows through */
+      background: transparent;
       backdrop-filter: none;
       position: relative;
       z-index: 1;
@@ -430,7 +431,7 @@
   </header>
 
   <div class="main-layout">
-    <!-- Splash background fills only the area right of the sidebar -->
+    <!-- Blurry splash background -->
     <div id="splash-bg" class="splash-background" style="background-image: url('images/splashes/High_Noon_Locke.jpg');"></div>
 
     <div class="champion-sidebar">
@@ -688,7 +689,6 @@
     function setSplashBackground(championId) {
       const splashBg = document.getElementById('splash-bg');
       if (!championId) {
-        // Reset to default High Noon Locke
         splashBg.style.backgroundImage = "url('images/splashes/High_Noon_Locke.jpg')";
         return;
       }
@@ -697,7 +697,6 @@
       splashBg.style.backgroundImage = `url('${splashUrl}')`;
     }
 
-    // --- Subtle loading indicator ---
     async function loadChampionInfo(championId, championName) {
       const infoPanel = document.getElementById('info-panel');
       setSplashBackground(championId);
@@ -726,7 +725,6 @@
       renderChampionInfo(championId, championName, data);
     }
 
-    // ---------- FULL RUNE PAGE RENDERER (unchanged) ----------
     function renderFullRunePage(runes) {
       if (!runeData || !runes.primary) return '';
 
@@ -812,7 +810,6 @@
       return `<div class="rune-page">${html}${statsTreeHTML}</div>`;
     }
 
-    // ---------- RENDER FULL CHAMPION INFO ----------
     function renderChampionInfo(championId, championName, data) {
       const infoPanel = document.getElementById('info-panel');
 
