@@ -622,21 +622,17 @@
           // Determine thumbnail URL
           let thumbnailUrl = data.videoThumbnail || null;
           if (!thumbnailUrl) {
-            // Attempt to get YouTube thumbnail from the URL
             thumbnailUrl = getYouTubeThumbnail(data.videoUrl);
           }
 
-          const videoTitle = data.videoTitle || 'Watch Matchup Video';
-
           if (thumbnailUrl) {
-            // Show thumbnail embed
+            // Thumbnail only – clickable image
             html += `<a href="${data.videoUrl}" target="_blank" rel="noopener" class="video-thumbnail-link">`;
-            html += `<img src="${thumbnailUrl}" alt="${videoTitle}" class="video-thumbnail-img" loading="lazy">`;
-            html += `<span class="video-thumbnail-title">${videoTitle}</span>`;
+            html += `<img src="${thumbnailUrl}" alt="${data.videoTitle || 'Matchup Video'}" class="video-thumbnail-img" loading="lazy">`;
             html += `</a>`;
           } else {
-            // Fallback to pill badge
-            html += `<a href="${data.videoUrl}" target="_blank" rel="noopener" class="video-badge" title="${data.videoUrl}">${videoTitle}</a>`;
+            // Fallback pill badge
+            html += `<a href="${data.videoUrl}" target="_blank" rel="noopener" class="video-badge" title="${data.videoUrl}">${data.videoTitle || 'Watch Matchup Video'}</a>`;
           }
         } else {
           html += `<span class="no-video">No video</span>`;

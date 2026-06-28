@@ -558,39 +558,26 @@ header h1 {
   font-style: italic;
 }
 
-/* Video thumbnail embed – Discord‑like preview */
+/* Video thumbnail embed – small, clickable, no title */
 .video-thumbnail-link {
-  display: block;
+  display: inline-block;          /* shrink to fit the image */
   border: 1px solid #2e2e3a;
   border-radius: 10px;
   overflow: hidden;
   background: rgba(27, 27, 42, 0.8);
   transition: border-color 0.2s;
-  text-decoration: none;
-  max-width: 100%;
+  max-width: 260px;               /* smaller width – adjust to taste */
   margin-top: 0.5rem;
+  text-decoration: none;
 }
 .video-thumbnail-link:hover {
   border-color: #c8aa6e;
 }
 
 .video-thumbnail-img {
+  display: block;
   width: 100%;
-  display: block;
-  object-fit: cover;
-  aspect-ratio: 16 / 9;
-}
-
-.video-thumbnail-title {
-  display: block;
-  padding: 0.5rem 0.8rem;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #f0e6d2;
-  background: rgba(0,0,0,0.3);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  height: auto;                   /* respects aspect ratio, no black borders */
 }
 
 /* Keep the fallback pill style (only used when no thumbnail) */
