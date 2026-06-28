@@ -5,12 +5,20 @@
   "midGame": "He roams effectively with ult. Ward river and match his roams.",
   "lateGame": "Falls off against tanks. Peel him off your backline.",
   "matchupNote": "Build anti-heal early. Fight inside his Q range to make it harder for him to hit the edge.",
-  "items": [
+"items": {
+  "starter": [
+    "images/items/Dorans_Shield.png",
+    "images/items/Health_Potion.png"
+  ],
+  "core": [
     "images/items/Thornmail.png",
-    "images/items/Plated_Steelcaps.png",
+    "images/items/Plated_Steelcaps.png"
+  ],
+  "situational": [
     "images/items/Bramble_Vest.png",
     "images/items/Randuins_Omen.png"
-  ],
+  ]
+},
   "runes": {
     "primary": {
       "style": "Precision",
