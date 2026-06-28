@@ -12,5 +12,19 @@
     "region": "la1",
     "continent": "americas",
     "displayName": "LxVer"
+  },
+  {
+    "twitch": "EkkotheNeeko",
+    "summonerName": "Ekko the Neeko#EUW",
+    "region": "euw1",
+    "continent": "europe",
+    "displayName": "EkkoTheNeeko"
+  },
+  {
+    "twitch": "Cazador",
+    "summonerName": "Mr Lucky Teacher#BLOOM",
+    "region": "euw1",
+    "continent": "europe",
+    "displayName": "Cazador"
   }
 ]
