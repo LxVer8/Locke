@@ -218,6 +218,7 @@
       font-weight: bold;
     }
 
+    /* Level phases and also used for items phases */
     .phases-row {
       display: flex;
       gap: 1rem;
@@ -279,13 +280,13 @@
     /* ----- Full rune tree styles ----- */
     .rune-page {
       display: flex;
-      gap: 1.5rem;                /* slightly smaller gap */
-      flex-wrap: wrap;            /* still allow wrapping on small screens */
+      gap: 1.5rem;
+      flex-wrap: wrap;
       align-items: flex-start;
     }
 
     .rune-tree {
-      flex: 1 1 160px;            /* reduced min-width to 160px */
+      flex: 1 1 160px;
       min-width: 160px;
       background: rgba(27, 27, 42, 0.4);
       border: 1px solid #2e2e3a;
@@ -297,7 +298,7 @@
     .rune-tree h4 {
       text-transform: uppercase;
       letter-spacing: 1px;
-      font-size: 0.85rem;        /* slightly smaller */
+      font-size: 0.85rem;
       color: #c8aa6e;
       margin-bottom: 0.6rem;
       display: flex;
@@ -306,7 +307,7 @@
     }
 
     .tree-icon {
-      width: 20px;                /* smaller tree icons */
+      width: 20px;
       height: 20px;
       border-radius: 4px;
     }
@@ -324,7 +325,7 @@
     }
 
     .rune-option {
-      width: 36px;                /* slightly smaller runes */
+      width: 36px;
       height: 36px;
       border-radius: 50%;
       border: 2px solid #4a3e2c;
@@ -345,11 +346,10 @@
     }
 
     .keystone-option {
-      width: 52px;               /* slightly smaller keystone */
+      width: 52px;
       height: 52px;
     }
 
-    /* Stats container now inside a rune-tree, but we keep the inner styles */
     .stats-container {
       display: flex;
       flex-direction: column;
@@ -424,23 +424,23 @@
     let runeData = null;
     let runeMap = {};
 
-    // Stat shard row definitions – in-game names and local file names
+    // Stat shard row definitions – now with Health Flat, Tenacity, Health Scaling as requested
     const STAT_ROWS = [
-      {
+      { // Offense
         options: [
           { name: "Adaptive Force", file: "Adaptive_Force" },
           { name: "Attack Speed", file: "Attack_Speed" },
           { name: "Ability Haste", file: "Ability_Haste" }
         ]
       },
-      {
+      { // Flex
         options: [
           { name: "Adaptive Force", file: "Adaptive_Force" },
           { name: "Movement Speed", file: "Movement_Speed" },
           { name: "Health Scaling", file: "Health_Scaling" }
         ]
       },
-      {
+      { // Defense – updated per request
         options: [
           { name: "Health Flat", file: "Health_Flat" },
           { name: "Tenacity", file: "Tenacity" },
@@ -683,11 +683,11 @@
         html += `</div>`; // end secondary tree
       }
 
-      // ---------- Stat shards (now as a third column) ----------
+      // ---------- Stat shards (third column with updated options) ----------
       let statsTreeHTML = '';
       if (runes.stats && Array.isArray(runes.stats) && runes.stats.length > 0) {
         statsTreeHTML = `<div class="rune-tree">`;
-        statsTreeHTML += `<h4>Shards</h4>`;          // simple label
+        statsTreeHTML += `<h4>Shards</h4>`;
         statsTreeHTML += `<div class="stats-container">`;
         for (let rowIdx = 0; rowIdx < STAT_ROWS.length; rowIdx++) {
           const rowOptions = STAT_ROWS[rowIdx].options;
@@ -702,12 +702,13 @@
           });
           statsTreeHTML += `</div>`;
         }
-        statsTreeHTML += `</div></div>`; // close stats-container and rune-tree
+        statsTreeHTML += `</div></div>`;
       }
 
       return `<div class="rune-page">${html}${statsTreeHTML}</div>`;
     }
 
+    // ---------- RENDER FULL CHAMPION INFO ----------
     function renderChampionInfo(championId, championName, data) {
       const infoPanel = document.getElementById('info-panel');
 
@@ -715,6 +716,7 @@
       html += `<h2>${championName}</h2>`;
 
       if (data) {
+        // Difficulty
         const diffNum = parseFloat(data.difficulty);
         if (!isNaN(diffNum)) {
           const { bg, text } = getDifficultyColor(diffNum);
@@ -725,26 +727,48 @@
 
         html += `<div class="info-slot"><h3>General Tip</h3><p>${data.generalTip || ''}</p></div>`;
 
+        // Phase info
         html += `<div class="phases-row">`;
         html += `<div class="phase-slot"><h4>Levels 1‑5</h4><p>${data.earlyGame || 'No info yet.'}</p></div>`;
         html += `<div class="phase-slot"><h4>Levels 6‑10</h4><p>${data.midGame || 'No info yet.'}</p></div>`;
         html += `<div class="phase-slot"><h4>Levels 11‑18</h4><p>${data.lateGame || 'No info yet.'}</p></div>`;
         html += `</div>`;
 
-        // Items
-        if (data.items && Array.isArray(data.items) && data.items.length > 0) {
-          html += `<div class="info-slot"><h3>Recommended Items</h3><div class="items-row">`;
-          data.items.forEach(itemUrl => {
-            html += `<img src="${itemUrl}" alt="Item" class="item-icon" loading="lazy" />`;
-          });
-          html += `</div></div>`;
+        // ========== ITEMS (split into starter / core / situational) ==========
+        if (data.items) {
+          // New structured format: { starter: [...], core: [...], situational: [...] }
+          if (typeof data.items === 'object' && !Array.isArray(data.items)) {
+            html += `<div class="info-slot"><h3>Recommended Items</h3><div class="phases-row">`;
+
+            const itemPhases = ['starter', 'core', 'situational'];
+            const labels = ['Starter Items', 'Core Items', 'Situational Items'];
+
+            itemPhases.forEach((phase, idx) => {
+              const phaseItems = data.items[phase] || [];
+              html += `<div class="phase-slot"><h4>${labels[idx]}</h4><div class="items-row">`;
+              phaseItems.forEach(url => {
+                html += `<img src="${url}" alt="Item" class="item-icon" loading="lazy" />`;
+              });
+              html += `</div></div>`;
+            });
+
+            html += `</div></div>`; // close phases-row and info-slot
+          }
+          // Old flat array format (fallback)
+          else if (Array.isArray(data.items) && data.items.length > 0) {
+            html += `<div class="info-slot"><h3>Recommended Items</h3><div class="items-row">`;
+            data.items.forEach(url => {
+              html += `<img src="${url}" alt="Item" class="item-icon" loading="lazy" />`;
+            });
+            html += `</div></div>`;
+          }
         } else if (data.itemsImage) {
           html += `<div class="info-slot"><h3>Recommended Items</h3>`;
           html += `<img src="${data.itemsImage}" alt="Items vs ${championName}" class="build-image" loading="lazy" />`;
           html += `</div>`;
         }
 
-        // Runes (with error protection)
+        // ========== RUNES ==========
         html += `<div class="info-slot"><h3>Recommended Runes</h3>`;
         try {
           if (data.runes) {
