@@ -155,12 +155,33 @@
       text-align: center;
     }
 
+    /* Info panel – now with relative positioning for spinner */
     .info-panel {
       flex: 1;
       padding: 2rem;
       overflow-y: auto;
       background: rgba(13, 13, 20, 0.7);
       backdrop-filter: blur(4px);
+      position: relative;          /* required for spinner placement */
+    }
+
+    /* Subtle loading spinner – appears after 300ms */
+    .info-panel.loading::after {
+      content: "";
+      position: absolute;
+      top: 1.2rem;
+      right: 1.2rem;
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(200, 170, 110, 0.25);
+      border-top-color: #c8aa6e;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      z-index: 5;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
 
     .placeholder-message {
@@ -218,7 +239,6 @@
       font-weight: bold;
     }
 
-    /* Level phases and also used for items phases */
     .phases-row {
       display: flex;
       gap: 1rem;
@@ -404,7 +424,7 @@
   <header>
     <h1>The Locke Bible</h1>
     <div class="header-search">
-      <input type="text" id="search-input" placeholder="🔍 Search champion..." autocomplete="off" />
+      <input type="text" id="search-input" placeholder="Search champion..." autocomplete="off" />
     </div>
   </header>
 
@@ -421,11 +441,12 @@
     // ---------- GLOBALS ----------
     let allChampionItems = [];
     const dataCache = {};
-    const championSearchTerms = {};   // championId -> array of lower case search terms
+    const championSearchTerms = {};
     let runeData = null;
     let runeMap = {};
+    let currentPatchVersion = '';
 
-    // ---------- ABBREVIATIONS (exactly the list you provided) ----------
+    // Abbreviations mapping (unchanged)
     const ABBREVIATIONS = [
       "Aurelion Sol asol",
       "Bel'Veth belveth bv",
@@ -447,35 +468,18 @@
       "Vel'Koz velkoz vk"
     ];
 
-    // Parse abbreviations into a map: abbreviation -> full name
-    const ABBREV_MAP = {};
-    ABBREVIATIONS.forEach(line => {
-      const parts = line.trim().split(/\s+/);
-      const fullName = parts[0] + (parts.length > 1 ? ' ' + parts.slice(1).filter(w => w.length > 2 || w === 'IV' ? true : false).join(' ') : '');
-      // Actually, the first token is the full name; subsequent are the abbreviations.
-      // Simpler: split all words; first word is full name; rest are abbreviations.
-      const tokens = line.trim().split(/\s+/);
-      const championFullName = tokens[0];  // single word like "Aurelion" but sometimes multi-word: "Aurelion Sol" is two tokens...
-      // So we need a different approach: the first token is the start of the full name, and we continue until we hit a token that is all lower case? No.
-      // Better: The lines are structured as: full name (possibly multiple words) followed by abbreviations (all lower case).
-      // We can split all tokens, then identify the last upper/mixed case token as end of full name.
-      // For simplicity, let's manually define abbreviations map ourselves from the list.
-      // Instead of parsing, I'll directly create the mapping from the provided examples.
-    });
-
-    // Manual mapping from abbreviations to exact champion name (as it appears in Data Dragon)
     const ABBREV_TO_CHAMP = {
       "asol": "Aurelion Sol",
       "belveth": "Bel'Veth",
       "bv": "Bel'Veth",
       "chogath": "Cho'Gath",
-      "mundo": "Dr. Mundo",      // Data Dragon uses "Dr. Mundo"
+      "mundo": "Dr. Mundo",
       "doctor": "Dr. Mundo",
       "gp": "Gangplank",
       "IV": "Jarvan IV",
       "j4": "Jarvan IV",
       "kaisa": "Kai'Sa",
-      "ks": ["Kai'Sa", "K'Sante"],   // ambiguous, we'll handle separately
+      "ks": ["Kai'Sa", "K'Sante"],
       "khazix": "Kha'Zix",
       "kz": "Kha'Zix",
       "kogmaw": "Kog'Maw",
@@ -493,7 +497,6 @@
       "vk": "Vel'Koz"
     };
 
-    // Stat shard row definitions
     const STAT_ROWS = [
       {
         options: [
@@ -518,7 +521,7 @@
       }
     ];
 
-    // ---------- LOAD RUNE DEFINITIONS ----------
+    // Load rune definitions
     (async function loadRuneData() {
       try {
         const versionsRes = await fetch('https://ddragon.leagueoflegends.com/api/versions.json');
@@ -538,7 +541,6 @@
       }
     })();
 
-    // ---------- SAFE FILE NAME HELPER ----------
     function safeFileName(name) {
       return name
         .trim()
@@ -551,7 +553,7 @@
         || 'unknown';
     }
 
-    // ---------- BUILD CHAMPION LIST ----------
+    // Build champion list
     (async () => {
       const championList = document.getElementById('champion-list');
 
@@ -559,6 +561,7 @@
         const versionsRes = await fetch('https://ddragon.leagueoflegends.com/api/versions.json');
         const versions = await versionsRes.json();
         const latestVersion = versions[0];
+        currentPatchVersion = latestVersion;
 
         const champsRes = await fetch(
           `https://ddragon.leagueoflegends.com/cdn/${latestVersion}/data/en_US/champion.json`
@@ -572,14 +575,11 @@
           item.dataset.championId = champ.id;
           item.dataset.championName = champ.name.toLowerCase();
 
-          // Build search terms: full name + abbreviations
           const searchTerms = new Set();
           searchTerms.add(champ.name.toLowerCase());
 
-          // Add abbreviations that point to this champion
           for (const [abbr, target] of Object.entries(ABBREV_TO_CHAMP)) {
             if (Array.isArray(target)) {
-              // ambiguous, check if champ name matches any
               if (target.some(t => t.toLowerCase() === champ.name.toLowerCase())) {
                 searchTerms.add(abbr.toLowerCase());
               }
@@ -616,7 +616,7 @@
         setupSearch();
 
       } catch (error) {
-        championList.innerHTML = '<p style="color:red;padding:1rem;">❌ Could not load champions.</p>';
+        championList.innerHTML = '<p style="color:red;padding:1rem;">Could not load champions.</p>';
         console.error(error);
       }
     })();
@@ -624,7 +624,7 @@
     function preloadSplashImages(champions) {
       champions.forEach(champ => {
         const img = new Image();
-        img.src = `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${champ.id}_0.jpg`;
+        img.src = `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${champ.id}_0.jpg?v=${currentPatchVersion}`;
       });
     }
 
@@ -681,20 +681,24 @@
         splashBg.classList.add('no-splash');
         return;
       }
-      const splashUrl = `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${championId}_0.jpg`;
+      const splashUrl = `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${championId}_0.jpg?v=${currentPatchVersion}`;
       splashBg.style.backgroundImage = `url('${splashUrl}')`;
       splashBg.classList.remove('no-splash');
     }
 
+    // --- UPDATED: Subtle loading indicator ---
     async function loadChampionInfo(championId, championName) {
       const infoPanel = document.getElementById('info-panel');
-      infoPanel.innerHTML = `<div class="champion-detail"><h2>${championName}</h2><p class="placeholder-message">⏳ Loading guide...</p></div>`;
       setSplashBackground(championId);
 
       let data;
       if (dataCache[championId]) {
         data = dataCache[championId];
       } else {
+        let loadingTimer = setTimeout(() => {
+          infoPanel.classList.add('loading');
+        }, 300);
+
         try {
           const res = await fetch(`champions/${championId}.json`);
           if (!res.ok) throw new Error('Not found');
@@ -702,6 +706,9 @@
           dataCache[championId] = data;
         } catch (err) {
           data = null;
+        } finally {
+          clearTimeout(loadingTimer);
+          infoPanel.classList.remove('loading');
         }
       }
 
@@ -866,7 +873,7 @@
           }
         } catch (err) {
           console.error('Error rendering runes:', err);
-          html += `<p style="color:red;">⚠️ Could not display runes – check console for details.</p>`;
+          html += `<p style="color:red;">Could not display runes – check console for details.</p>`;
         }
         html += `</div>`;
 
