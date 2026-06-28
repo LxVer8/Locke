@@ -41,7 +41,7 @@
       background-image: none;
     }
 
-    /* Header – flex layout with left/center/right */
+    /* ---- HEADER ---- */
     header {
       position: sticky;
       top: 0;
@@ -52,7 +52,7 @@
       flex-shrink: 0;
       backdrop-filter: blur(5px);
       display: flex;
-      align-items: center;
+      align-items: flex-start;      /* align top edges */
       justify-content: space-between;
       flex-wrap: wrap;
       gap: 0.5rem;
@@ -60,7 +60,7 @@
 
     .header-left {
       flex: 0 0 auto;
-      min-width: 100px;
+      min-width: 150px;
     }
 
     .header-center {
@@ -71,21 +71,30 @@
     .header-right {
       flex: 0 0 auto;
       text-align: right;
-      min-width: 120px;
+      min-width: 150px;
     }
 
+    /* Back button – same size as the title */
     .intro-back-btn {
-      color: #c8aa6e;
-      cursor: pointer;
+      display: inline-block;
+      font-size: 1.8rem;          /* matches h1 */
       font-weight: bold;
+      color: #c8aa6e;
+      text-shadow: 0 0 10px rgba(200, 170, 110, 0.3);
+      cursor: pointer;
       user-select: none;
-      font-size: 0.95rem;
+      line-height: 1.2;
     }
 
+    /* Visit counter – visible and styled */
     .visit-counter {
+      font-size: 1.2rem;
       color: #8b7a62;
-      font-size: 0.85rem;
+      font-weight: 600;
       white-space: nowrap;
+      line-height: 1.2;
+      margin-top: 0.4rem;
+      display: inline-block;
     }
 
     header h1 {
@@ -408,6 +417,9 @@
         text-align: center;
         min-width: unset;
       }
+      .intro-back-btn {
+        font-size: 1.4rem;
+      }
       .main-layout {
         flex-direction: column;
         overflow: hidden;
@@ -599,11 +611,12 @@
           visitCount = countData.value;
           visitCounterEl.textContent = `Visits: ${visitCount}`;
         } else {
-          visitCounterEl.textContent = '';
+          // API returned error – keep placeholder
+          visitCounterEl.textContent = 'Visits: —';
         }
       } catch (e) {
         console.warn('Visit counter unavailable');
-        visitCounterEl.textContent = '';
+        visitCounterEl.textContent = 'Visits: —';
       }
 
       // Show intro if no champion is currently selected
@@ -747,7 +760,7 @@
         preloadSplashImages(champions);
         setupSearch();
 
-        // After building the list, load the intro (and counter)
+        // Load intro data (and counter) after list is built
         loadIntroData();
 
       } catch (error) {
@@ -934,7 +947,7 @@
       return `<div class="rune-page">${html}${statsTreeHTML}</div>`;
     }
 
-    // ---------- RENDER FULL CHAMPION INFO (no back button inside) ----------
+    // ---------- RENDER FULL CHAMPION INFO ----------
     function renderChampionInfo(championId, championName, data) {
       const infoPanel = document.getElementById('info-panel');
 
