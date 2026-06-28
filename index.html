@@ -127,11 +127,16 @@
       }
     ];
 
-    // ---------- CUSTOM TOOLTIP LOGIC ----------
+// ---------- CUSTOM TOOLTIP LOGIC ----------
 const tooltip = document.getElementById('custom-tooltip');
 let currentTooltipTarget = null;
 
-function updateTooltipPosition(e) {
+function updateTooltipText(target) {
+  const text = target.getAttribute('data-tooltip');
+  if (text) tooltip.textContent = text;
+}
+
+function positionTooltip(e) {
   const x = e.clientX;
   const y = e.clientY;
   tooltip.style.left = x + 'px';
@@ -154,20 +159,14 @@ function showTooltip(e) {
     return;
   }
 
-  const text = target.getAttribute('data-tooltip');
-  if (!text) return;
-
-  // If we're already showing the same element, just update position
-  if (currentTooltipTarget === target) {
-    updateTooltipPosition(e);
-    return;
+  // Only rebuild the tooltip when entering a new element
+  if (currentTooltipTarget !== target) {
+    updateTooltipText(target);
+    tooltip.classList.add('visible');
+    currentTooltipTarget = target;
   }
 
-  // Show new tooltip
-  tooltip.textContent = text;
-  tooltip.classList.add('visible');
-  currentTooltipTarget = target;
-  updateTooltipPosition(e);
+  positionTooltip(e);
 }
 
 function hideTooltip() {
@@ -175,27 +174,18 @@ function hideTooltip() {
   currentTooltipTarget = null;
 }
 
-// Use mousemove to constantly update position while hovering
+// Use mousemove for smooth cursor tracking
 document.addEventListener('mousemove', (e) => {
   const target = e.target.closest('[data-tooltip]');
   if (target) {
-    // Update position (even if already visible)
-    if (tooltip.classList.contains('visible')) {
-      updateTooltipPosition(e);
-    } else {
-      showTooltip(e);
-    }
+    showTooltip(e);
   } else {
     hideTooltip();
   }
 });
 
-// Also hide when leaving the page or a tooltip element
-document.addEventListener('mouseout', (e) => {
-  if (!e.target.closest('[data-tooltip]')) {
-    hideTooltip();
-  }
-});
+// Hide when the mouse leaves the window completely (optional, but clean)
+document.addEventListener('mouseleave', hideTooltip);
 
     // ---------- LOAD INTRO DATA ----------
     async function loadIntroData() {
