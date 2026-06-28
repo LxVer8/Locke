@@ -128,43 +128,74 @@
     ];
 
     // ---------- CUSTOM TOOLTIP LOGIC ----------
-    const tooltip = document.getElementById('custom-tooltip');
+const tooltip = document.getElementById('custom-tooltip');
+let currentTooltipTarget = null;
 
-    function showTooltip(e) {
-      const target = e.target.closest('[data-tooltip]');
-      if (!target) return;
-      const text = target.getAttribute('data-tooltip');
-      if (!text) return;
+function updateTooltipPosition(e) {
+  const x = e.clientX;
+  const y = e.clientY;
+  tooltip.style.left = x + 'px';
+  tooltip.style.top  = y + 'px';
 
-      tooltip.textContent = text;
-      tooltip.classList.add('visible');
+  // Keep it fully visible on screen
+  const rect = tooltip.getBoundingClientRect();
+  if (rect.right > window.innerWidth) {
+    tooltip.style.left = (x - rect.width) + 'px';
+  }
+  if (rect.bottom > window.innerHeight) {
+    tooltip.style.top = (y - rect.height - 10) + 'px';
+  }
+}
 
-      // Position near the cursor
-      const x = e.clientX;
-      const y = e.clientY;
-      tooltip.style.left = x + 'px';
-      tooltip.style.top = y + 'px';
+function showTooltip(e) {
+  const target = e.target.closest('[data-tooltip]');
+  if (!target) {
+    hideTooltip();
+    return;
+  }
 
-      // Keep it on screen (simple adjustment)
-      const rect = tooltip.getBoundingClientRect();
-      if (rect.right > window.innerWidth) {
-        tooltip.style.left = (x - rect.width) + 'px';
-      }
-      if (rect.bottom > window.innerHeight) {
-        tooltip.style.top = (y - rect.height - 10) + 'px';
-      }
+  const text = target.getAttribute('data-tooltip');
+  if (!text) return;
+
+  // If we're already showing the same element, just update position
+  if (currentTooltipTarget === target) {
+    updateTooltipPosition(e);
+    return;
+  }
+
+  // Show new tooltip
+  tooltip.textContent = text;
+  tooltip.classList.add('visible');
+  currentTooltipTarget = target;
+  updateTooltipPosition(e);
+}
+
+function hideTooltip() {
+  tooltip.classList.remove('visible');
+  currentTooltipTarget = null;
+}
+
+// Use mousemove to constantly update position while hovering
+document.addEventListener('mousemove', (e) => {
+  const target = e.target.closest('[data-tooltip]');
+  if (target) {
+    // Update position (even if already visible)
+    if (tooltip.classList.contains('visible')) {
+      updateTooltipPosition(e);
+    } else {
+      showTooltip(e);
     }
+  } else {
+    hideTooltip();
+  }
+});
 
-    function hideTooltip() {
-      tooltip.classList.remove('visible');
-    }
-
-    document.addEventListener('mouseover', showTooltip);
-    document.addEventListener('mouseout', (e) => {
-      if (!e.target.closest('[data-tooltip]')) {
-        hideTooltip();
-      }
-    });
+// Also hide when leaving the page or a tooltip element
+document.addEventListener('mouseout', (e) => {
+  if (!e.target.closest('[data-tooltip]')) {
+    hideTooltip();
+  }
+});
 
     // ---------- LOAD INTRO DATA ----------
     async function loadIntroData() {
