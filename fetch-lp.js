@@ -8,20 +8,25 @@ if (!API_KEY) {
 }
 
 const config = JSON.parse(fs.readFileSync('streamers.json', 'utf8'));
+console.log('Loaded', config.length, 'creators from streamers.json');
 
-function riotRequest(hostname, path, region) {
+function riotRequest(hostname, path) {
   return new Promise((resolve, reject) => {
     const options = {
-      hostname: hostname.replace('REGION', region),
+      hostname: hostname,
       path: path,
       headers: { 'X-Riot-Token': API_KEY }
     };
+    console.log(`  Requesting: https://${hostname}${path}`);
     https.get(options, (res) => {
       let data = '';
       res.on('data', chunk => data += chunk);
       res.on('end', () => {
-        if (res.statusCode === 200) resolve(JSON.parse(data));
-        else reject(new Error(`Riot API ${res.statusCode}: ${data}`));
+        if (res.statusCode === 200) {
+          resolve(JSON.parse(data));
+        } else {
+          reject(new Error(`Status ${res.statusCode}: ${data}`));
+        }
       });
     }).on('error', reject);
   });
@@ -29,31 +34,33 @@ function riotRequest(hostname, path, region) {
 
 async function getLP(entry) {
   try {
-    // 1. Get PUUID via Account API (supports Riot IDs like "Name#TAG")
     const [gameName, tagLine] = entry.summonerName.split('#');
-    const account = await riotRequest(
-      'REGION.api.riotgames.com',
-      `/riot/account/v1/accounts/by-riot-id/${encodeURIComponent(gameName)}/${encodeURIComponent(tagLine || '')}`,
-      entry.region  // e.g., 'europe' for EUW, 'americas' for NA – see region mapping below
-    );
+    console.log(`\nProcessing ${gameName}#${tagLine} (continent: ${entry.continent}, region: ${entry.region})`);
 
-    // 2. Get summoner ID from PUUID (using regional routing, not continental)
+    // 1. Account API
+    const account = await riotRequest(
+      `${entry.continent}.api.riotgames.com`,
+      `/riot/account/v1/accounts/by-riot-id/${encodeURIComponent(gameName)}/${encodeURIComponent(tagLine)}`
+    );
+    console.log(`  Account found: ${account.puuid}`);
+
+    // 2. Summoner API
     const summoner = await riotRequest(
       `${entry.region}.api.riotgames.com`,
-      `/lol/summoner/v4/summoners/by-puuid/${account.puuid}`,
-      entry.region
+      `/lol/summoner/v4/summoners/by-puuid/${account.puuid}`
     );
+    console.log(`  Summoner found: ${summoner.id}`);
 
-    // 3. Get ranked stats
+    // 3. League API
     const leagues = await riotRequest(
       `${entry.region}.api.riotgames.com`,
-      `/lol/league/v4/entries/by-summoner/${summoner.id}`,
-      entry.region
+      `/lol/league/v4/entries/by-summoner/${summoner.id}`
     );
+    console.log(`  Leagues:`, JSON.stringify(leagues));
 
     const soloQ = leagues.find(l => l.queueType === 'RANKED_SOLO_5x5');
     if (!soloQ) {
-      // Unranked player – still show them at the bottom with 0 LP
+      console.log('  No Solo/Duo rank found – using fallback (0 LP)');
       return {
         twitch: entry.twitch,
         displayName: entry.displayName || gameName,
@@ -66,6 +73,7 @@ async function getLP(entry) {
       };
     }
 
+    console.log(`  Rank: ${soloQ.tier} ${soloQ.rank} – ${soloQ.leaguePoints} LP`);
     return {
       twitch: entry.twitch,
       displayName: entry.displayName || gameName,
@@ -79,25 +87,20 @@ async function getLP(entry) {
         : '0'
     };
   } catch (err) {
-    console.error(`Failed for ${entry.summonerName}:`, err.message);
+    console.error(`  ERROR for ${entry.summonerName}:`, err.message);
     return null;
   }
 }
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 (async () => {
   const leaderboard = [];
-
   for (const entry of config) {
     const data = await getLP(entry);
     if (data) leaderboard.push(data);
-    await sleep(2000); // stay under rate limit
+    await new Promise(r => setTimeout(r, 2000)); // 2 second delay
   }
 
   leaderboard.sort((a, b) => b.leaguePoints - a.leaguePoints);
   fs.writeFileSync('leaderboard.json', JSON.stringify(leaderboard, null, 2));
-  console.log('leaderboard.json updated with', leaderboard.length, 'players');
+  console.log(`\nleaderboard.json written with ${leaderboard.length} players`);
 })();

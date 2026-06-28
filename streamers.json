@@ -1,30 +1,9 @@
 [
   {
-    "twitch": "Unknown",
-    "summonerName": "Locke#Byku",
-    "region": "eun1",
-    "continent": "europe",
-    "displayName": "TheLockeGuy"
-  },
-  {
-    "twitch": "LxVer8",
-    "summonerName": "LxVer#Shaco",
-    "region": "la1",
-    "continent": "americas",
-    "displayName": "LxVer"
-  },
-  {
     "twitch": "EkkotheNeeko",
     "summonerName": "Ekko the Neeko#EUW",
     "region": "euw1",
     "continent": "europe",
     "displayName": "Ekko the Neeko"
-  },
-  {
-    "twitch": "Cazador",
-    "summonerName": "Mr Lucky Teacher#BLOOM",
-    "region": "euw1",
-    "continent": "europe",
-    "displayName": "Cazador"
   }
 ]
