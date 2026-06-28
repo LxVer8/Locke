@@ -313,33 +313,6 @@ header h1 {
   font-weight: bold;
 }
 
-/* Container for the difficulty + video row */
-.difficulty-video-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 2rem;
-}
-
-/* Vertical divider between difficulty and video sections */
-.difficulty-left {
-  border-right: 1px solid #2e2e3a;   /* thin subtle line */
-  padding-right: 2rem;
-  margin-right: 0;                    /* reset if needed */
-}
-
-.video-right {
-  padding-left: 2rem;
-}
-
-.video-right h4 {
-  margin-bottom: 0.5rem;
-  color: #c8aa6e;
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
 .phases-row {
   display: flex;
   gap: 1rem;
@@ -555,36 +528,6 @@ header h1 {
   }
 }
 
-/* ---------- NEW: matchup split styles (now unused, but kept for reference) ---------- */
-.matchup-split {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1.5rem;
-  margin-top: 0.5rem;
-}
-.matchup-left,
-.matchup-right {
-  flex: 1;
-}
-.matchup-right {
-  text-align: right;
-}
-.matchup-video-link {
-  color: #f0c27a;
-  text-decoration: none;
-  font-weight: bold;
-  font-size: 0.95rem;
-  transition: color 0.2s;
-}
-.matchup-video-link:hover {
-  color: #ffd966;
-}
-.no-video {
-  color: #666;
-  font-style: italic;
-}
-
 /* Video thumbnail embed – fixed 260x146 px, no black borders */
 .video-thumbnail-link {
   display: inline-block;
@@ -606,17 +549,17 @@ header h1 {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;      /* scales to cover, crops excess, no black bars */
+  object-fit: cover;
 }
 
-/* Keep the fallback pill style (only used when no thumbnail) */
+/* Fallback pill badge (when no thumbnail available) */
 .phase-slot .video-badge {
   display: inline-block;
   padding: 0.2rem 1rem;
   border-radius: 20px;
   font-weight: bold;
   background: transparent;
-  color: #0563C1;                /* Excel hyperlink blue */
+  color: #0563C1;
   border: 2px solid #0563C1;
   text-decoration: none;
   transition: background 0.2s, color 0.2s;
@@ -626,10 +569,22 @@ header h1 {
   color: #ffffff;
 }
 
-/* Author inline style (unchanged) */
+/* Author credit inline after the heading */
 .video-author-inline {
   font-size: 0.85rem;
   color: #8b7a62;
   font-style: italic;
   font-weight: normal;
+}
+
+/* No video placeholder */
+.no-video {
+  color: #666;
+  font-style: italic;
+}
+
+/* Push the video card to the right inside the phases-row */
+.video-card {
+  flex: 0 0 auto !important;
+  margin-left: auto;
 }

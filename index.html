@@ -465,7 +465,6 @@
       splashBg.style.backgroundImage = `url('${splashUrl}')`;
     }
 
-    // ---------- YOUTUBE THUMBNAIL HELPER ----------
     function getYouTubeThumbnail(url) {
       try {
         const urlObj = new URL(url);
@@ -595,13 +594,11 @@
       html += `<h2>${championName}</h2>`;
 
       if (data) {
-        // ---------- Matchup Difficulty (original style) + Video Guide (right-aligned) ----------
-        html += `<div class="info-slot">`;
-        html += `<div class="difficulty-video-row">`;
+        // ---------- Matchup Difficulty (identical style to Summoner Spells & Abilities) ----------
+        html += `<div class="info-slot"><h3>Matchup Difficulty</h3><div class="phases-row">`;
 
-        // Left side – difficulty heading and badge (no extra card)
-        html += `<div class="difficulty-left">`;
-        html += `<h3>Matchup Difficulty</h3>`;
+        // Left card – Difficulty
+        html += `<div class="phase-slot"><h4>Difficulty</h4>`;
         const diffNum = parseFloat(data.difficulty);
         if (!isNaN(diffNum)) {
           const { bg, text } = getDifficultyColor(diffNum);
@@ -611,9 +608,8 @@
         }
         html += `</div>`;
 
-        // Right side – video guide (thumbnail stays as is)
-        html += `<div class="video-right">`;
-        html += `<h4>Video Guide`;
+        // Right card – Video Guide (right-aligned)
+        html += `<div class="phase-slot video-card"><h4>Video Guide`;
         if (data.videoAuthor) {
           html += ` <span class="video-author-inline">by ${data.videoAuthor}</span>`;
         }
@@ -635,8 +631,7 @@
         }
         html += `</div>`;
 
-        html += `</div>`; // close difficulty-video-row
-        html += `</div>`; // close info-slot
+        html += `</div></div>`; // close phases-row and info-slot
 
         html += `<div class="info-slot"><h3>General Tip</h3><p>${data.generalTip || ''}</p></div>`;
 
