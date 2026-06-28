@@ -3,12 +3,14 @@
     "twitch": "Unknown",
     "summonerName": "Locke#Byku",
     "region": "eun1",
+    "continent": "europe",
     "displayName": "TheLockeGuy"
   },
   {
     "twitch": "LxVer8",
     "summonerName": "LxVer#Shaco",
     "region": "la1",
+    "continent": "americas",
     "displayName": "LxVer"
   }
 ]
