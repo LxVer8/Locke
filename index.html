@@ -550,6 +550,15 @@ document.addEventListener('mouseleave', hideTooltip);
         html += `<div class="phase-slot"><h4>Levels 11‑18</h4><p>${data.lateGame || 'No info yet.'}</p></div>`;
         html += `</div>`;
 
+        // Summoner Spells
+        if (data.summoners && Array.isArray(data.summoners) && data.summoners.length > 0) {
+          html += `<div class="info-slot"><h3>Summoner Spells</h3><div class="items-row">`;
+          data.summoners.forEach(url => {
+            html += `<img src="${url}" alt="Summoner Spell" class="item-icon" data-tooltip="${itemCleanName(url)}" loading="lazy" />`;
+          });
+          html += `</div></div>`;
+        }
+
         // Items
         if (data.items) {
           if (typeof data.items === 'object' && !Array.isArray(data.items)) {

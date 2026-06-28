@@ -5,6 +5,10 @@
   "midGame": "?",
   "lateGame": "?",
   "matchupNote": "?",
+  "summoners": [
+  "images/summoners/Flash.png",
+  "images/summoners/Ignite.png"
+],
 "items": {
   "starter": [
     "images/items/Dorans_Ring.png",
