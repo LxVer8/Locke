@@ -32,6 +32,9 @@
     </div>
   </div>
 
+  <!-- Custom tooltip element -->
+  <div id="custom-tooltip"></div>
+
   <script>
     // ---------- GLOBALS ----------
     let allChampionItems = [];
@@ -124,6 +127,45 @@
       }
     ];
 
+    // ---------- CUSTOM TOOLTIP LOGIC ----------
+    const tooltip = document.getElementById('custom-tooltip');
+
+    function showTooltip(e) {
+      const target = e.target.closest('[data-tooltip]');
+      if (!target) return;
+      const text = target.getAttribute('data-tooltip');
+      if (!text) return;
+
+      tooltip.textContent = text;
+      tooltip.classList.add('visible');
+
+      // Position near the cursor
+      const x = e.clientX;
+      const y = e.clientY;
+      tooltip.style.left = x + 'px';
+      tooltip.style.top = y + 'px';
+
+      // Keep it on screen (simple adjustment)
+      const rect = tooltip.getBoundingClientRect();
+      if (rect.right > window.innerWidth) {
+        tooltip.style.left = (x - rect.width) + 'px';
+      }
+      if (rect.bottom > window.innerHeight) {
+        tooltip.style.top = (y - rect.height - 10) + 'px';
+      }
+    }
+
+    function hideTooltip() {
+      tooltip.classList.remove('visible');
+    }
+
+    document.addEventListener('mouseover', showTooltip);
+    document.addEventListener('mouseout', (e) => {
+      if (!e.target.closest('[data-tooltip]')) {
+        hideTooltip();
+      }
+    });
+
     // ---------- LOAD INTRO DATA ----------
     async function loadIntroData() {
       try {
@@ -205,10 +247,10 @@
         || 'unknown';
     }
 
-    // Helper to extract file name from an image URL (no extension)
-    function itemFileNameFromUrl(url) {
-      const filename = url.split('/').pop();          // "Doran's_Blade.png"
-      return filename.replace(/\.[^.]+$/, '');        // "Doran's_Blade"
+    // Helper to extract a clean item name from URL
+    function itemCleanName(url) {
+      const filename = url.split('/').pop().replace(/\.[^.]+$/, ''); // remove extension
+      return filename.replace(/_/g, ' '); // underscores → spaces
     }
 
     // ---------- BUILD CHAMPION LIST ----------
@@ -402,7 +444,7 @@
         html += `<div class="rune-slot-row keystone-row">`;
         keystoneSlot.runes.forEach(rune => {
           const isSelected = rune.name === runes.primary.keystone;
-          html += `<img src="${getRuneImagePath(rune.name)}" class="rune-option keystone-option ${isSelected ? 'selected' : 'unselected'}" alt="${rune.name}" title="${safeFileName(rune.name)}" loading="lazy"/>`;
+          html += `<img src="${getRuneImagePath(rune.name)}" class="rune-option keystone-option ${isSelected ? 'selected' : 'unselected'}" alt="${rune.name}" data-tooltip="${rune.name}" loading="lazy"/>`;
         });
         html += `</div>`;
 
@@ -413,7 +455,7 @@
           html += `<div class="rune-slot-row">`;
           slot.runes.forEach(rune => {
             const isSelected = rune.name === selectedKey;
-            html += `<img src="${getRuneImagePath(rune.name)}" class="rune-option ${isSelected ? 'selected' : 'unselected'}" alt="${rune.name}" title="${safeFileName(rune.name)}" loading="lazy"/>`;
+            html += `<img src="${getRuneImagePath(rune.name)}" class="rune-option ${isSelected ? 'selected' : 'unselected'}" alt="${rune.name}" data-tooltip="${rune.name}" loading="lazy"/>`;
           });
           html += `</div>`;
         }
@@ -431,7 +473,7 @@
           html += `<div class="rune-slot-row">`;
           slot.runes.forEach(rune => {
             const isSelected = rune.name === runes.secondary.rune1 || rune.name === runes.secondary.rune2;
-            html += `<img src="${getRuneImagePath(rune.name)}" class="rune-option ${isSelected ? 'selected' : 'unselected'}" alt="${rune.name}" title="${safeFileName(rune.name)}" loading="lazy"/>`;
+            html += `<img src="${getRuneImagePath(rune.name)}" class="rune-option ${isSelected ? 'selected' : 'unselected'}" alt="${rune.name}" data-tooltip="${rune.name}" loading="lazy"/>`;
           });
           html += `</div>`;
         }
@@ -453,7 +495,7 @@
           rowOptions.forEach(opt => {
             const isSelected = (opt.file === selectedBase);
             const imgPath = `images/runes/${opt.file}.png`;
-            statsTreeHTML += `<img src="${imgPath}" class="rune-option ${isSelected ? 'selected' : 'unselected'}" alt="${opt.name}" title="${opt.file}" loading="lazy"/>`;
+            statsTreeHTML += `<img src="${imgPath}" class="rune-option ${isSelected ? 'selected' : 'unselected'}" alt="${opt.name}" data-tooltip="${opt.name}" loading="lazy"/>`;
           });
           statsTreeHTML += `</div>`;
         }
@@ -497,7 +539,7 @@
               const phaseItems = data.items[phase] || [];
               html += `<div class="phase-slot"><h4>${labels[idx]}</h4><div class="items-row">`;
               phaseItems.forEach(url => {
-                html += `<img src="${url}" alt="Item" class="item-icon" title="${itemFileNameFromUrl(url)}" loading="lazy" />`;
+                html += `<img src="${url}" alt="Item" class="item-icon" data-tooltip="${itemCleanName(url)}" loading="lazy" />`;
               });
               html += `</div></div>`;
             });
@@ -505,7 +547,7 @@
           } else if (Array.isArray(data.items) && data.items.length > 0) {
             html += `<div class="info-slot"><h3>Recommended Items</h3><div class="items-row">`;
             data.items.forEach(url => {
-              html += `<img src="${url}" alt="Item" class="item-icon" title="${itemFileNameFromUrl(url)}" loading="lazy" />`;
+              html += `<img src="${url}" alt="Item" class="item-icon" data-tooltip="${itemCleanName(url)}" loading="lazy" />`;
             });
             html += `</div></div>`;
           }
@@ -524,7 +566,7 @@
             } else if (Array.isArray(data.runes)) {
               html += `<div class="items-row">`;
               data.runes.forEach(runeUrl => {
-                html += `<img src="${runeUrl}" alt="Rune" class="item-icon" title="${itemFileNameFromUrl(runeUrl)}" loading="lazy" />`;
+                html += `<img src="${runeUrl}" alt="Rune" class="item-icon" data-tooltip="${itemCleanName(runeUrl)}" loading="lazy" />`;
               });
               html += `</div>`;
             } else {
