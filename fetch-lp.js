@@ -45,11 +45,17 @@ async function getLP(entry) {
     console.log(`  Account found: ${account.puuid}`);
 
     // 2. Summoner API
+    // 2. Summoner API
     const summoner = await riotRequest(
       `${entry.region}.api.riotgames.com`,
       `/lol/summoner/v4/summoners/by-puuid/${account.puuid}`
     );
-    console.log(`  Summoner found: ${summoner.id}`);
+    console.log(`  Summoner full response:`, JSON.stringify(summoner));
+
+    if (!summoner || !summoner.id) {
+      throw new Error('Summoner object missing "id" field');
+    }
+    console.log(`  Summoner id: ${summoner.id}`);
 
     // 3. League API
     const leagues = await riotRequest(

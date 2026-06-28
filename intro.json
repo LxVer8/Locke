@@ -18,6 +18,10 @@
     "content": "<ol><li>Before selecting a champion, show information about Locke players, linking their OP.GG and YouTube/Twitch channels, as well as links to the Locke Mains Discord Server and Reddit. Also add recommended guides.</li><li>Add a Trading Patterns section for each champion with basic trades that you could do against each champion based on which level the enemy and you are.</li><li>Find YouTube videos for each matchup and link them.</li><li>Add a section on each matchup that shows who did the last change and when was it made.</li><li>Add a History, so you can see how each matchup was played in the past.</li><li>Add the same disclaimer that we have here on the website.</li><li>Add a Contributors section where the names of everyone that helped the website in any way are going to be.</li></ol>"
     },
     {
+      "heading": "More Locke guides",
+      "content": "<ol><li>Here are some other Locke guides:</li><li><a href='https://docs.google.com/document/d/1en26pAXASskikbkcF1_ikq1fMF37-HEbnt6r_gjjKFA/edit?usp=sharing'>The Ultimate Comprehensive Guide to Locke</a>, made by md_afrosaiyan and atum3345.</li><li><a href='https://docs.google.com/presentation/d/1J5dQPvLCgN1FB0kJjTUjTkYpvo4p1zCPkKNrLCW_sz8/edit?usp=sharing'>The Only Locke Guide You'll Need</a>, made by sipsap.</li></ol>"
+    },
+    {
       "heading": "Disclaimer",
       "content": "This website is a fan-made project and is not affiliated with, endorsed by, or sponsored by Riot Games, Inc. League of Legends and all related champions, images, artwork, names, and trademarks are the property of Riot Games, Inc. All content is used under Riot Games’ Fan Content Policy for the purpose of education and community discussion. This site is provided free of charge and exists solely as an informational resource for League of Legends players."
     }
