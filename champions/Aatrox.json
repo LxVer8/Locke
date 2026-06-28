@@ -1,42 +1,20 @@
 {
-  "difficulty": 0,
-  "generalTip": "No information was written yet. If you want to help, please contact LxVer8 on Discord or join the <a href='https://discord.gg/Hhm93tvCVC'>Locke Mains' Discord Server</a>, or the <a href='https://www.reddit.com/r/Locke_Mains/'>Locke Mains Reddit</a>.",
-  "earlyGame": "?",
-  "midGame": "?",
-  "lateGame": "?",
-  "matchupNote": "?",
-"items": {
-  "starter": [
-    "images/items/Dorans_Ring.png",
-    "images/items/Health_Potion.png"
-  ],
-  "core": [
-    "images/items/Oblivion_Orb.png",
-    "images/items/Lich_Bane.png",
-    "images/items/Shadowflame.png"
-  ],
-  "situational": [
-    "images/items/Liandrys_Torment.png",
-    "images/items/Rabadons_Deathcap.png"
-  ]
-},
+  "difficulty": 8,
+  "generalTip": "Dodge his Q sweet spots…",
+  "earlyGame": "…",
+  "midGame": "…",
+  "lateGame": "…",
+  "summoners": ["Flash", "Ignite"],
+  "skillOrder": "Q → E → W",
+  "items": {
+    "starter": ["images/items/Dorans_Shield.png"],
+    "core": ["images/items/Thornmail.png", "images/items/Plated_Steelcaps.png"],
+    "situational": ["images/items/Bramble_Vest.png", "images/items/Randuins_Omen.png"]
+  },
   "runes": {
-    "primary": {
-      "style": "Domination",
-      "keystone": "Electrocute",
-      "row1": "Sudden Impact",
-      "row2": "Sixth Sense",
-      "row3": "Ultimate Hunter"
-    },
-    "secondary": {
-      "style": "Resolve",
-      "rune1": "Bone Plating",
-      "rune2": "Revitalize"
-    },
-    "stats": [
-      "images/runes/Adaptive_Force.png",
-      "images/runes/Adaptive_Force.png",
-      "images/runes/Health_Scaling.png"
-    ]
-  }
+    "primary": { "style": "Precision", "keystone": "Conqueror", "row1": "Triumph", "row2": "Legend: Alacrity", "row3": "Last Stand" },
+    "secondary": { "style": "Resolve", "rune1": "Bone Plating", "rune2": "Revitalize" },
+    "stats": ["images/runes/Adaptive_Force.png", "images/runes/Adaptive_Force.png", "images/runes/Health_Scaling.png"]
+  },
+  "matchupNote": "Build anti-heal early."
 }
