@@ -279,13 +279,14 @@
     /* ----- Full rune tree styles ----- */
     .rune-page {
       display: flex;
-      gap: 2rem;
-      flex-wrap: wrap;
+      gap: 1.5rem;                /* slightly smaller gap */
+      flex-wrap: wrap;            /* still allow wrapping on small screens */
+      align-items: flex-start;
     }
 
     .rune-tree {
-      flex: 1;
-      min-width: 200px;
+      flex: 1 1 160px;            /* reduced min-width to 160px */
+      min-width: 160px;
       background: rgba(27, 27, 42, 0.4);
       border: 1px solid #2e2e3a;
       border-radius: 12px;
@@ -296,17 +297,17 @@
     .rune-tree h4 {
       text-transform: uppercase;
       letter-spacing: 1px;
-      font-size: 0.9rem;
+      font-size: 0.85rem;        /* slightly smaller */
       color: #c8aa6e;
-      margin-bottom: 0.8rem;
+      margin-bottom: 0.6rem;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.4rem;
     }
 
     .tree-icon {
-      width: 24px;
-      height: 24px;
+      width: 20px;                /* smaller tree icons */
+      height: 20px;
       border-radius: 4px;
     }
 
@@ -314,17 +315,17 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 8px;
-      margin: 6px 0;
+      gap: 6px;
+      margin: 4px 0;
     }
 
     .rune-slot-row.keystone-row {
-      margin-bottom: 12px;
+      margin-bottom: 8px;
     }
 
     .rune-option {
-      width: 40px;
-      height: 40px;
+      width: 36px;                /* slightly smaller runes */
+      height: 36px;
       border-radius: 50%;
       border: 2px solid #4a3e2c;
       background: #0a0a0f;
@@ -344,50 +345,15 @@
     }
 
     .keystone-option {
-      width: 60px;
-      height: 60px;
+      width: 52px;               /* slightly smaller keystone */
+      height: 52px;
     }
 
-    .secondary-runes {
-      display: flex;
-      gap: 1.5rem;
-      justify-content: center;
-      margin-top: 1rem;
-    }
-
-    .secondary-rune {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      border: 1px solid #4a3e2c;
-      background: #0a0a0f;
-      object-fit: contain;
-    }
-
-    .secondary-rune.selected {
-      border-color: #c8aa6e;
-    }
-
+    /* Stats container now inside a rune-tree, but we keep the inner styles */
     .stats-container {
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin-top: 1.2rem;
-    }
-
-    .stats-row {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      margin-top: 0.5rem;
-    }
-
-    .stats-row img {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      border: 1px solid #4a3e2c;
-      background: #0a0a0f;
     }
 
     @media (max-width: 700px) {
@@ -460,21 +426,21 @@
 
     // Stat shard row definitions – in-game names and local file names
     const STAT_ROWS = [
-      { // Offense
+      {
         options: [
           { name: "Adaptive Force", file: "Adaptive_Force" },
           { name: "Attack Speed", file: "Attack_Speed" },
           { name: "Ability Haste", file: "Ability_Haste" }
         ]
       },
-      { // Flex
+      {
         options: [
           { name: "Adaptive Force", file: "Adaptive_Force" },
           { name: "Movement Speed", file: "Movement_Speed" },
           { name: "Health Scaling", file: "Health_Scaling" }
         ]
       },
-      { // Defense
+      {
         options: [
           { name: "Health Flat", file: "Health_Flat" },
           { name: "Tenacity", file: "Tenacity" },
@@ -653,7 +619,7 @@
       renderChampionInfo(championId, championName, data);
     }
 
-    // ---------- FULL RUNE PAGE RENDERER (local images, full trees, vertical stats) ----------
+    // ---------- FULL RUNE PAGE RENDERER (local images, side-by-side with stats) ----------
     function renderFullRunePage(runes) {
       if (!runeData || !runes.primary) return '';
 
@@ -675,7 +641,6 @@
         html += `<div class="rune-tree">`;
         html += `<h4><img src="${getTreeIconPath(primaryTree.name)}" class="tree-icon" alt=""/>${primaryTree.name}</h4>`;
 
-        // Keystone row (slot 0)
         const keystoneSlot = primaryTree.slots[0];
         html += `<div class="rune-slot-row keystone-row">`;
         keystoneSlot.runes.forEach(rune => {
@@ -684,7 +649,6 @@
         });
         html += `</div>`;
 
-        // Rows 1-3
         for (let i = 1; i <= 3; i++) {
           const slot = primaryTree.slots[i];
           if (!slot) continue;
@@ -719,28 +683,29 @@
         html += `</div>`; // end secondary tree
       }
 
-      // ---------- Stat shards (vertical rows, all options) ----------
-      let statsHTML = '';
+      // ---------- Stat shards (now as a third column) ----------
+      let statsTreeHTML = '';
       if (runes.stats && Array.isArray(runes.stats) && runes.stats.length > 0) {
-        statsHTML = '<div class="stats-container">';
+        statsTreeHTML = `<div class="rune-tree">`;
+        statsTreeHTML += `<h4>Shards</h4>`;          // simple label
+        statsTreeHTML += `<div class="stats-container">`;
         for (let rowIdx = 0; rowIdx < STAT_ROWS.length; rowIdx++) {
           const rowOptions = STAT_ROWS[rowIdx].options;
-          const selectedPath = runes.stats[rowIdx] || '';               // e.g. "images/runes/Adaptive_Force.png"
-          const selectedBase = selectedPath.split('/').pop()            // "Adaptive_Force.png"
-                                          .replace('.png', '');         // "Adaptive_Force"
+          const selectedPath = runes.stats[rowIdx] || '';
+          const selectedBase = selectedPath.split('/').pop().replace('.png', '');
 
-          statsHTML += `<div class="rune-slot-row">`;
+          statsTreeHTML += `<div class="rune-slot-row">`;
           rowOptions.forEach(opt => {
             const isSelected = (opt.file === selectedBase);
             const imgPath = `images/runes/${opt.file}.png`;
-            statsHTML += `<img src="${imgPath}" class="rune-option ${isSelected ? 'selected' : 'unselected'}" alt="${opt.name}" loading="lazy"/>`;
+            statsTreeHTML += `<img src="${imgPath}" class="rune-option ${isSelected ? 'selected' : 'unselected'}" alt="${opt.name}" loading="lazy"/>`;
           });
-          statsHTML += `</div>`;
+          statsTreeHTML += `</div>`;
         }
-        statsHTML += `</div>`;
+        statsTreeHTML += `</div></div>`; // close stats-container and rune-tree
       }
 
-      return `<div class="rune-page">${html}</div>${statsHTML}`;
+      return `<div class="rune-page">${html}${statsTreeHTML}</div>`;
     }
 
     function renderChampionInfo(championId, championName, data) {
