@@ -228,7 +228,7 @@
       renderIntro();
     }
 
-    // ---------- NEW FUNCTION: SHOW CREATORS ----------
+    // ---------- SHOW CREATORS ----------
     function showCreators() {
       if (activeChampionItem) {
         activeChampionItem.classList.remove('active');
@@ -463,6 +463,23 @@
       const splashUrl = CUSTOM_SPLASHES[championId] ||
         `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${championId}_0.jpg?v=${currentPatchVersion}`;
       splashBg.style.backgroundImage = `url('${splashUrl}')`;
+    }
+
+    // ---------- YOUTUBE THUMBNAIL HELPER ----------
+    function getYouTubeThumbnail(url) {
+      try {
+        const urlObj = new URL(url);
+        let videoId = null;
+        if (urlObj.hostname.includes('youtube.com') && urlObj.pathname === '/watch') {
+          videoId = urlObj.searchParams.get('v');
+        } else if (urlObj.hostname === 'youtu.be') {
+          videoId = urlObj.pathname.slice(1).split('/')[0];
+        }
+        if (videoId) {
+          return `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+        }
+      } catch (e) {}
+      return null;
     }
 
     async function loadChampionInfo(championId, championName) {
