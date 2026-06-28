@@ -368,11 +368,18 @@
       border-color: #c8aa6e;
     }
 
+    .stats-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 1.2rem;
+    }
+
     .stats-row {
       display: flex;
       gap: 1rem;
       justify-content: center;
-      margin-top: 1rem;
+      margin-top: 0.5rem;
     }
 
     .stats-row img {
@@ -450,6 +457,31 @@
     const dataCache = {};
     let runeData = null;
     let runeMap = {};
+
+    // Stat shard row definitions – in-game names and local file names
+    const STAT_ROWS = [
+      { // Offense
+        options: [
+          { name: "Adaptive Force", file: "Adaptive_Force" },
+          { name: "Attack Speed", file: "Attack_Speed" },
+          { name: "Ability Haste", file: "Ability_Haste" }
+        ]
+      },
+      { // Flex
+        options: [
+          { name: "Adaptive Force", file: "Adaptive_Force" },
+          { name: "Movement Speed", file: "Movement_Speed" },
+          { name: "Health Scaling", file: "Health_Scaling" }
+        ]
+      },
+      { // Defense
+        options: [
+          { name: "Health", file: "Health" },
+          { name: "Armor", file: "Armor" },
+          { name: "Magic Resist", file: "Magic_Resist" }
+        ]
+      }
+    ];
 
     // ---------- LOAD RUNE DEFINITIONS ----------
     (async function loadRuneData() {
@@ -621,7 +653,7 @@
       renderChampionInfo(championId, championName, data);
     }
 
-    // ---------- FULL RUNE PAGE RENDERER (local images) ----------
+    // ---------- FULL RUNE PAGE RENDERER (local images, full trees, vertical stats) ----------
     function renderFullRunePage(runes) {
       if (!runeData || !runes.primary) return '';
 
@@ -643,6 +675,7 @@
         html += `<div class="rune-tree">`;
         html += `<h4><img src="${getTreeIconPath(primaryTree.name)}" class="tree-icon" alt=""/>${primaryTree.name}</h4>`;
 
+        // Keystone row (slot 0)
         const keystoneSlot = primaryTree.slots[0];
         html += `<div class="rune-slot-row keystone-row">`;
         keystoneSlot.runes.forEach(rune => {
@@ -651,6 +684,7 @@
         });
         html += `</div>`;
 
+        // Rows 1-3
         for (let i = 1; i <= 3; i++) {
           const slot = primaryTree.slots[i];
           if (!slot) continue;
@@ -663,7 +697,7 @@
           html += `</div>`;
         }
 
-        html += `</div>`;
+        html += `</div>`; // end primary tree
       }
 
       // Secondary tree (full rows)
@@ -682,16 +716,27 @@
           html += `</div>`;
         }
 
-        html += `</div>`;
+        html += `</div>`; // end secondary tree
       }
 
-      // Stats row below trees
+      // ---------- Stat shards (vertical rows, all options) ----------
       let statsHTML = '';
       if (runes.stats && Array.isArray(runes.stats) && runes.stats.length > 0) {
-        statsHTML = `<div class="stats-row">`;
-        runes.stats.forEach(statUrl => {
-          statsHTML += `<img src="${statUrl}" alt="Stat" loading="lazy"/>`;
-        });
+        statsHTML = '<div class="stats-container">';
+        for (let rowIdx = 0; rowIdx < STAT_ROWS.length; rowIdx++) {
+          const rowOptions = STAT_ROWS[rowIdx].options;
+          const selectedPath = runes.stats[rowIdx] || '';               // e.g. "images/runes/Adaptive_Force.png"
+          const selectedBase = selectedPath.split('/').pop()            // "Adaptive_Force.png"
+                                          .replace('.png', '');         // "Adaptive_Force"
+
+          statsHTML += `<div class="rune-slot-row">`;
+          rowOptions.forEach(opt => {
+            const isSelected = (opt.file === selectedBase);
+            const imgPath = `images/runes/${opt.file}.png`;
+            statsHTML += `<img src="${imgPath}" class="rune-option ${isSelected ? 'selected' : 'unselected'}" alt="${opt.name}" loading="lazy"/>`;
+          });
+          statsHTML += `</div>`;
+        }
         statsHTML += `</div>`;
       }
 
