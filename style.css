@@ -321,15 +321,17 @@ header h1 {
   gap: 2rem;
 }
 
-/* Left side – difficulty stays as before, no extra background */
-.difficulty-left h3 {
-  margin-bottom: 0.5rem;   /* keep original heading spacing */
+/* Vertical divider between difficulty and video sections */
+.difficulty-left {
+  border-right: 1px solid #2e2e3a;   /* thin subtle line */
+  padding-right: 2rem;
+  margin-right: 0;                    /* reset if needed */
 }
 
-/* Right side – video guide area */
 .video-right {
-  text-align: right;
+  padding-left: 2rem;
 }
+
 .video-right h4 {
   margin-bottom: 0.5rem;
   color: #c8aa6e;
