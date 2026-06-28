@@ -544,50 +544,51 @@ document.addEventListener('mouseleave', hideTooltip);
 
         html += `<div class="info-slot"><h3>General Tip</h3><p>${data.generalTip || ''}</p></div>`;
 
-        html += `<div class="phases-row">`;
+        // ---------- GAME PHASES ----------
+        html += `<div class="info-slot"><h3>Game Phases</h3><div class="phases-row">`;
         html += `<div class="phase-slot"><h4>Levels 1‑5</h4><p>${data.earlyGame || 'No info yet.'}</p></div>`;
         html += `<div class="phase-slot"><h4>Levels 6‑10</h4><p>${data.midGame || 'No info yet.'}</p></div>`;
         html += `<div class="phase-slot"><h4>Levels 11‑18</h4><p>${data.lateGame || 'No info yet.'}</p></div>`;
-        html += `</div>`;
+        html += `</div></div>`;
 
-// Summoner Spells + Ability Max Order (two-column layout)
-const hasSumms = data.summoners && Array.isArray(data.summoners) && data.summoners.length > 0;
-const hasAbilities = data.abilityMaxOrder && Array.isArray(data.abilityMaxOrder) && data.abilityMaxOrder.length > 0;
+        // ---------- SUMMONER SPELLS + ABILITY MAX ORDER ----------
+        const hasSumms = data.summoners && Array.isArray(data.summoners) && data.summoners.length > 0;
+        const hasAbilities = data.abilityMaxOrder && Array.isArray(data.abilityMaxOrder) && data.abilityMaxOrder.length > 0;
 
-if (hasSumms || hasAbilities) {
-  html += `<div class="info-slot"><div class="summoner-spells-row">`;
+        if (hasSumms || hasAbilities) {
+          html += `<div class="info-slot"><h3>Summoner Spells & Abilities</h3><div class="phases-row">`;
 
-  // Left column: Summoner Spells
-  html += `<div class="summoner-spells-col"><h3>Summoner Spells</h3>`;
-  if (hasSumms) {
-    html += `<div class="items-row">`;
-    data.summoners.forEach(url => {
-      html += `<img src="${url}" alt="Summoner Spell" class="item-icon" data-tooltip="${itemCleanName(url)}" loading="lazy" />`;
-    });
-    html += `</div>`;
-  } else {
-    html += `<p>No info yet.</p>`;
-  }
-  html += `</div>`;
+          // Left box – Summoner Spells
+          html += `<div class="phase-slot"><h4>Summoner Spells</h4>`;
+          if (hasSumms) {
+            html += `<div class="items-row">`;
+            data.summoners.forEach(url => {
+              html += `<img src="${url}" alt="Summoner Spell" class="item-icon" data-tooltip="${itemCleanName(url)}" loading="lazy" />`;
+            });
+            html += `</div>`;
+          } else {
+            html += `<p>No info yet.</p>`;
+          }
+          html += `</div>`;
 
-  // Right column: Ability Max Order
-  html += `<div class="summoner-spells-col"><h3>Ability Max Order</h3>`;
-  if (hasAbilities) {
-    html += `<div class="items-row">`;
-    data.abilityMaxOrder.forEach((url, idx) => {
-      const orderNumber = idx + 1;  // 1,2,3
-      html += `<span class="ability-icon-wrap" data-order="${orderNumber}">`;
-      html += `<img src="${url}" alt="Ability ${orderNumber}" class="item-icon" data-tooltip="${itemCleanName(url)}" loading="lazy" />`;
-      html += `</span>`;
-    });
-    html += `</div>`;
-  } else {
-    html += `<p>No info yet.</p>`;
-  }
-  html += `</div>`;
+          // Right box – Ability Max Order
+          html += `<div class="phase-slot"><h4>Ability Max Order</h4>`;
+          if (hasAbilities) {
+            html += `<div class="items-row">`;
+            data.abilityMaxOrder.forEach((url, idx) => {
+              const orderNumber = idx + 1;
+              html += `<span class="ability-icon-wrap" data-order="${orderNumber}">`;
+              html += `<img src="${url}" alt="Ability ${orderNumber}" class="item-icon" data-tooltip="${itemCleanName(url)}" loading="lazy" />`;
+              html += `</span>`;
+            });
+            html += `</div>`;
+          } else {
+            html += `<p>No info yet.</p>`;
+          }
+          html += `</div>`;
 
-  html += `</div></div>`;  // close summoner-spells-row and info-slot
-}
+          html += `</div></div>`; // close phases-row and info-slot
+        }
 
         // Items
         if (data.items) {
