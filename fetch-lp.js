@@ -52,7 +52,19 @@ async function getLP(entry) {
     );
 
     const soloQ = leagues.find(l => l.queueType === 'RANKED_SOLO_5x5');
-    if (!soloQ) return null;
+    if (!soloQ) {
+      // Unranked player – still show them at the bottom with 0 LP
+      return {
+        twitch: entry.twitch,
+        displayName: entry.displayName || gameName,
+        tier: 'Unranked',
+        rank: '',
+        leaguePoints: 0,
+        wins: 0,
+        losses: 0,
+        winRate: '0'
+      };
+    }
 
     return {
       twitch: entry.twitch,
