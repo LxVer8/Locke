@@ -4,474 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Locke Bible</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      color: #e0d7c6;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      background: #0a0a0f;
-    }
-
-    .splash-background {
-      position: absolute;
-      top: 0;
-      left: 300px;
-      right: 0;
-      bottom: 0;
-      background-size: 105%;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-color: rgba(10, 10, 15, 0.45);
-      background-blend-mode: multiply;
-      filter: blur(4px);
-      transition: background-image 0.15s ease;
-      z-index: 0;
-    }
-
-    .splash-background.no-splash {
-      background-image: none;
-    }
-
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      background: rgba(10, 10, 15, 0.85);
-      padding: 0.8rem 1.5rem 1rem;
-      border-bottom: 1px solid #2a2a3a;
-      flex-shrink: 0;
-      backdrop-filter: blur(5px);
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-
-    .header-left {
-      flex: 0 0 auto;
-      min-width: 150px;
-    }
-
-    .header-center {
-      flex: 1 1 auto;
-      text-align: center;
-    }
-
-    .header-right {
-      flex: 0 0 auto;
-      text-align: right;
-      min-width: 180px;
-    }
-
-    .intro-back-btn {
-      display: inline-block;
-      font-size: 1.8rem;
-      font-weight: bold;
-      color: #c8aa6e;
-      text-shadow: 0 0 10px rgba(200, 170, 110, 0.3);
-      cursor: pointer;
-      user-select: none;
-      line-height: 1.2;
-    }
-
-    header h1 {
-      font-size: 1.8rem;
-      color: #c8aa6e;
-      text-shadow: 0 0 10px rgba(200, 170, 110, 0.3);
-      margin-bottom: 0.3rem;
-    }
-
-    .header-search {
-      max-width: 400px;
-      margin: 0 auto;
-    }
-
-    .header-search input {
-      width: 100%;
-      padding: 0.6rem 1rem;
-      border-radius: 6px;
-      border: 1px solid #4a3e2c;
-      background: #1b1b2a;
-      color: #f0e6d2;
-      font-size: 0.95rem;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    .header-search input::placeholder {
-      color: #6b5e4a;
-    }
-
-    .header-search input:focus {
-      border-color: #c8aa6e;
-    }
-
-    .main-layout {
-      display: flex;
-      flex: 1;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .champion-sidebar {
-      width: 300px;
-      min-width: 300px;
-      background: rgba(17, 17, 24, 0.75);
-      border-right: 1px solid #2a2a3a;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      backdrop-filter: blur(8px);
-      z-index: 1;
-    }
-
-    .champion-list {
-      flex: 1;
-      overflow-y: auto;
-      padding: 0.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .champion-item {
-      display: flex;
-      align-items: center;
-      gap: 0.8rem;
-      padding: 0.4rem 0.5rem;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.2s, border-color 0.2s;
-      border: 2px solid transparent;
-      background: rgba(27, 27, 42, 0.7);
-    }
-
-    .champion-item:hover {
-      background: rgba(36, 36, 58, 0.85);
-      border-color: #c8aa6e;
-    }
-
-    .champion-item.active {
-      border-color: #f0b27a;
-      box-shadow: 0 0 10px rgba(240, 178, 122, 0.4);
-    }
-
-    .champion-item img {
-      width: 96px;
-      height: 96px;
-      border-radius: 12px;
-      object-fit: cover;
-      background: #0f0f1a;
-      border: 2px solid #4a3e2c;
-      flex-shrink: 0;
-    }
-
-    .champion-item span {
-      font-size: 1rem;
-      font-weight: 600;
-      color: #f0e6d2;
-      white-space: nowrap;
-    }
-
-    .no-results {
-      padding: 1rem;
-      color: #6b5e4a;
-      text-align: center;
-    }
-
-    .info-panel {
-      flex: 1;
-      padding: 2rem;
-      overflow-y: auto;
-      background: transparent;
-      backdrop-filter: none;
-      position: relative;
-      z-index: 1;
-    }
-
-    .info-panel.loading::after {
-      content: "";
-      position: absolute;
-      top: 1.2rem;
-      right: 1.2rem;
-      width: 18px;
-      height: 18px;
-      border: 2px solid rgba(200, 170, 110, 0.25);
-      border-top-color: #c8aa6e;
-      border-radius: 50%;
-      animation: spin 0.6s linear infinite;
-      z-index: 5;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    .champion-detail {
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    .champion-detail h2 {
-      font-size: 2rem;
-      margin-bottom: 1.5rem;
-      color: #c8aa6e;
-      border-bottom: 1px solid #2e2e3a;
-      padding-bottom: 0.3rem;
-    }
-
-    .info-slot {
-      background: rgba(27, 27, 42, 0.7);
-      border: 1px solid #2e2e3a;
-      border-radius: 10px;
-      padding: 1.2rem;
-      margin-bottom: 1.2rem;
-      backdrop-filter: blur(4px);
-    }
-
-    .info-slot h3 {
-      font-size: 1rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: #8b7a62;
-      margin-bottom: 0.6rem;
-    }
-
-    .info-slot p {
-      color: #ddd6c8;
-      line-height: 1.5;
-    }
-
-        .info-content ul, .info-content ol {
-      padding-left: 1.5rem;
-      color: #ddd6c8;
-      line-height: 1.5;
-    }
-
-        .info-content a {
-      color: #c8aa6e;           /* bright gold, matches your title */
-      text-decoration: none;
-      font-weight: 600;
-    }
-    .info-content a:hover {
-      color: #f0c27a;           /* slightly lighter on hover */
-      text-decoration: underline;
-    }
-
-    .difficulty-badge {
-      display: inline-block;
-      padding: 0.2rem 1rem;
-      border-radius: 20px;
-      font-weight: bold;
-    }
-
-    .phases-row {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 1.2rem;
-    }
-
-    .phase-slot {
-      flex: 1;
-      background: rgba(27, 27, 42, 0.7);
-      border: 1px solid #2e2e3a;
-      border-radius: 10px;
-      padding: 1rem;
-      backdrop-filter: blur(4px);
-    }
-
-    .phase-slot h4 {
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      font-size: 0.85rem;
-      color: #c8aa6e;
-      margin-bottom: 0.5rem;
-    }
-
-    .phase-slot p {
-      color: #ddd6c8;
-      font-size: 0.9rem;
-      line-height: 1.4;
-    }
-
-    .items-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 0.5rem;
-    }
-
-    .item-icon {
-      width: 56px;
-      height: 56px;
-      border-radius: 8px;
-      border: 2px solid #4a3e2c;
-      background: #0f0f1a;
-      object-fit: cover;
-      transition: transform 0.15s, border-color 0.15s;
-    }
-
-    .item-icon:hover {
-      transform: scale(1.1);
-      border-color: #c8aa6e;
-    }
-
-    .build-image {
-      width: 100%;
-      border-radius: 8px;
-      border: 1px solid #3a3a4a;
-      margin-top: 0.5rem;
-    }
-
-    .rune-page {
-      display: flex;
-      gap: 1.5rem;
-      flex-wrap: wrap;
-      align-items: flex-start;
-    }
-
-    .rune-tree {
-      flex: 1 1 160px;
-      min-width: 160px;
-      background: rgba(27, 27, 42, 0.4);
-      border: 1px solid #2e2e3a;
-      border-radius: 12px;
-      padding: 1rem;
-      backdrop-filter: blur(4px);
-    }
-
-    .rune-tree h4 {
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      font-size: 0.85rem;
-      color: #c8aa6e;
-      margin-bottom: 0.6rem;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-
-    .tree-icon {
-      width: 20px;
-      height: 20px;
-      border-radius: 4px;
-    }
-
-    .rune-slot-row {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 6px;
-      margin: 4px 0;
-    }
-
-    .rune-slot-row.keystone-row {
-      margin-bottom: 8px;
-    }
-
-    .rune-option {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      border: 2px solid #4a3e2c;
-      background: #0a0a0f;
-      object-fit: contain;
-      transition: transform 0.15s;
-    }
-
-    .rune-option.selected {
-      border-color: #c8aa6e;
-      filter: none;
-      opacity: 1;
-    }
-
-    .rune-option.unselected {
-      filter: grayscale(100%) brightness(0.6);
-      opacity: 0.5;
-    }
-
-    .keystone-option {
-      width: 52px;
-      height: 52px;
-    }
-
-    .stats-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    @media (max-width: 700px) {
-      header {
-        flex-direction: column;
-        align-items: stretch;
-      }
-      .header-left, .header-right {
-        text-align: center;
-        min-width: unset;
-      }
-      .intro-back-btn {
-        font-size: 1.4rem;
-      }
-      .main-layout {
-        flex-direction: column;
-        overflow: hidden;
-      }
-      .splash-background {
-        left: 0;
-        top: 0;
-      }
-      .champion-sidebar {
-        width: 100%;
-        min-width: unset;
-        height: auto;
-        max-height: 50vh;
-        flex-shrink: 0;
-        border-right: none;
-        border-bottom: 1px solid #2a2a3a;
-      }
-      .champion-list {
-        flex-direction: row;
-        flex-wrap: wrap;
-        overflow-y: auto;
-      }
-      .champion-item {
-        flex-shrink: 0;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.2rem;
-        padding: 0.2rem;
-        border: none;
-        background: none;
-        min-width: 90px;
-      }
-      .champion-item img {
-        width: 64px;
-        height: 64px;
-      }
-      .champion-item span {
-        font-size: 0.7rem;
-      }
-      .phases-row {
-        flex-direction: column;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header>
     <div class="header-left">
-      <span id="intro-back-btn" class="intro-back-btn" onclick="resetToIntro()" style="display:none;">← Intro</span>
+      <span id="intro-back-btn" class="intro-back-btn" onclick="resetToIntro()" style="display:none;">Back to Intro</span>
     </div>
     <div class="header-center">
       <h1>The Locke Bible</h1>
@@ -667,6 +205,12 @@
         || 'unknown';
     }
 
+    // Helper to extract file name from an image URL (no extension)
+    function itemFileNameFromUrl(url) {
+      const filename = url.split('/').pop();          // "Doran's_Blade.png"
+      return filename.replace(/\.[^.]+$/, '');        // "Doran's_Blade"
+    }
+
     // ---------- BUILD CHAMPION LIST ----------
     (async () => {
       const championList = document.getElementById('champion-list');
@@ -858,7 +402,7 @@
         html += `<div class="rune-slot-row keystone-row">`;
         keystoneSlot.runes.forEach(rune => {
           const isSelected = rune.name === runes.primary.keystone;
-          html += `<img src="${getRuneImagePath(rune.name)}" class="rune-option keystone-option ${isSelected ? 'selected' : 'unselected'}" alt="${rune.name}" loading="lazy"/>`;
+          html += `<img src="${getRuneImagePath(rune.name)}" class="rune-option keystone-option ${isSelected ? 'selected' : 'unselected'}" alt="${rune.name}" title="${safeFileName(rune.name)}" loading="lazy"/>`;
         });
         html += `</div>`;
 
@@ -869,7 +413,7 @@
           html += `<div class="rune-slot-row">`;
           slot.runes.forEach(rune => {
             const isSelected = rune.name === selectedKey;
-            html += `<img src="${getRuneImagePath(rune.name)}" class="rune-option ${isSelected ? 'selected' : 'unselected'}" alt="${rune.name}" loading="lazy"/>`;
+            html += `<img src="${getRuneImagePath(rune.name)}" class="rune-option ${isSelected ? 'selected' : 'unselected'}" alt="${rune.name}" title="${safeFileName(rune.name)}" loading="lazy"/>`;
           });
           html += `</div>`;
         }
@@ -887,7 +431,7 @@
           html += `<div class="rune-slot-row">`;
           slot.runes.forEach(rune => {
             const isSelected = rune.name === runes.secondary.rune1 || rune.name === runes.secondary.rune2;
-            html += `<img src="${getRuneImagePath(rune.name)}" class="rune-option ${isSelected ? 'selected' : 'unselected'}" alt="${rune.name}" loading="lazy"/>`;
+            html += `<img src="${getRuneImagePath(rune.name)}" class="rune-option ${isSelected ? 'selected' : 'unselected'}" alt="${rune.name}" title="${safeFileName(rune.name)}" loading="lazy"/>`;
           });
           html += `</div>`;
         }
@@ -909,7 +453,7 @@
           rowOptions.forEach(opt => {
             const isSelected = (opt.file === selectedBase);
             const imgPath = `images/runes/${opt.file}.png`;
-            statsTreeHTML += `<img src="${imgPath}" class="rune-option ${isSelected ? 'selected' : 'unselected'}" alt="${opt.name}" loading="lazy"/>`;
+            statsTreeHTML += `<img src="${imgPath}" class="rune-option ${isSelected ? 'selected' : 'unselected'}" alt="${opt.name}" title="${opt.file}" loading="lazy"/>`;
           });
           statsTreeHTML += `</div>`;
         }
@@ -953,7 +497,7 @@
               const phaseItems = data.items[phase] || [];
               html += `<div class="phase-slot"><h4>${labels[idx]}</h4><div class="items-row">`;
               phaseItems.forEach(url => {
-                html += `<img src="${url}" alt="Item" class="item-icon" loading="lazy" />`;
+                html += `<img src="${url}" alt="Item" class="item-icon" title="${itemFileNameFromUrl(url)}" loading="lazy" />`;
               });
               html += `</div></div>`;
             });
@@ -961,7 +505,7 @@
           } else if (Array.isArray(data.items) && data.items.length > 0) {
             html += `<div class="info-slot"><h3>Recommended Items</h3><div class="items-row">`;
             data.items.forEach(url => {
-              html += `<img src="${url}" alt="Item" class="item-icon" loading="lazy" />`;
+              html += `<img src="${url}" alt="Item" class="item-icon" title="${itemFileNameFromUrl(url)}" loading="lazy" />`;
             });
             html += `</div></div>`;
           }
@@ -980,7 +524,7 @@
             } else if (Array.isArray(data.runes)) {
               html += `<div class="items-row">`;
               data.runes.forEach(runeUrl => {
-                html += `<img src="${runeUrl}" alt="Rune" class="item-icon" loading="lazy" />`;
+                html += `<img src="${runeUrl}" alt="Rune" class="item-icon" title="${itemFileNameFromUrl(runeUrl)}" loading="lazy" />`;
               });
               html += `</div>`;
             } else {
