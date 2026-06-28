@@ -431,491 +431,512 @@
   </div>
 
   <script>
-    // ---------- GLOBALS ----------
-    let allChampionItems = [];
-    const dataCache = {};
-    const championSearchTerms = {};
-    let runeData = null;
-    let runeMap = {};
-    let currentPatchVersion = '';
-    let introData = null;                          // will hold the intro JSON
+  // ---------- GLOBALS ----------
+  let allChampionItems = [];
+  const dataCache = {};
+  const championSearchTerms = {};
+  let runeData = null;
+  let runeMap = {};
+  let currentPatchVersion = '';
+  let introData = null;
+  let activeChampionItem = null;    // track which champion is selected (DOM element)
 
-    const CUSTOM_SPLASHES = {
-      "Fiddlesticks": "images/splashes/Fiddlesticks.jpg"
-    };
+  const CUSTOM_SPLASHES = {
+    "Fiddlesticks": "images/splashes/Fiddlesticks.jpg"
+  };
 
-    // Abbreviations mapping
-    const ABBREVIATIONS = [
-      "Aurelion Sol asol",
-      "Bel'Veth belveth bv",
-      "Cho'Gath chogath",
-      "Dr Mundo mundo doctor",
-      "Gangplank gp",
-      "Jarvan IV IV j4",
-      "Kai'Sa kaisa ks",
-      "Kha'Zix khazix kz",
-      "Kog'Maw kogmaw km",
-      "K'Sante ksante ks",
-      "LeBlanc lb",
-      "Master Yi yi",
-      "Miss Fortune mf",
-      "Reksai rek'sai rs",
-      "renata glasc rg",
-      "Tahm Kench tk",
-      "Twisted Fate tf",
-      "Vel'Koz velkoz vk"
-    ];
+  // Abbreviations mapping
+  const ABBREVIATIONS = [
+    "Aurelion Sol asol",
+    "Bel'Veth belveth bv",
+    "Cho'Gath chogath",
+    "Dr Mundo mundo doctor",
+    "Gangplank gp",
+    "Jarvan IV IV j4",
+    "Kai'Sa kaisa ks",
+    "Kha'Zix khazix kz",
+    "Kog'Maw kogmaw km",
+    "K'Sante ksante ks",
+    "LeBlanc lb",
+    "Master Yi yi",
+    "Miss Fortune mf",
+    "Reksai rek'sai rs",
+    "renata glasc rg",
+    "Tahm Kench tk",
+    "Twisted Fate tf",
+    "Vel'Koz velkoz vk"
+  ];
 
-    const ABBREV_TO_CHAMP = {
-      "asol": "Aurelion Sol",
-      "belveth": "Bel'Veth",
-      "bv": "Bel'Veth",
-      "chogath": "Cho'Gath",
-      "mundo": "Dr. Mundo",
-      "doctor": "Dr. Mundo",
-      "gp": "Gangplank",
-      "IV": "Jarvan IV",
-      "j4": "Jarvan IV",
-      "kaisa": "Kai'Sa",
-      "ks": ["Kai'Sa", "K'Sante"],
-      "khazix": "Kha'Zix",
-      "kz": "Kha'Zix",
-      "kogmaw": "Kog'Maw",
-      "km": "Kog'Maw",
-      "ksante": "K'Sante",
-      "lb": "LeBlanc",
-      "yi": "Master Yi",
-      "mf": "Miss Fortune",
-      "rek'sai": "Rek'Sai",
-      "rs": "Rek'Sai",
-      "rg": "Renata Glasc",
-      "tk": "Tahm Kench",
-      "tf": "Twisted Fate",
-      "velkoz": "Vel'Koz",
-      "vk": "Vel'Koz"
-    };
+  const ABBREV_TO_CHAMP = {
+    "asol": "Aurelion Sol",
+    "belveth": "Bel'Veth",
+    "bv": "Bel'Veth",
+    "chogath": "Cho'Gath",
+    "mundo": "Dr. Mundo",
+    "doctor": "Dr. Mundo",
+    "gp": "Gangplank",
+    "IV": "Jarvan IV",
+    "j4": "Jarvan IV",
+    "kaisa": "Kai'Sa",
+    "ks": ["Kai'Sa", "K'Sante"],
+    "khazix": "Kha'Zix",
+    "kz": "Kha'Zix",
+    "kogmaw": "Kog'Maw",
+    "km": "Kog'Maw",
+    "ksante": "K'Sante",
+    "lb": "LeBlanc",
+    "yi": "Master Yi",
+    "mf": "Miss Fortune",
+    "rek'sai": "Rek'Sai",
+    "rs": "Rek'Sai",
+    "rg": "Renata Glasc",
+    "tk": "Tahm Kench",
+    "tf": "Twisted Fate",
+    "velkoz": "Vel'Koz",
+    "vk": "Vel'Koz"
+  };
 
-    const STAT_ROWS = [
-      {
-        options: [
-          { name: "Adaptive Force", file: "Adaptive_Force" },
-          { name: "Attack Speed", file: "Attack_Speed" },
-          { name: "Ability Haste", file: "Ability_Haste" }
-        ]
-      },
-      {
-        options: [
-          { name: "Adaptive Force", file: "Adaptive_Force" },
-          { name: "Movement Speed", file: "Movement_Speed" },
-          { name: "Health Scaling", file: "Health_Scaling" }
-        ]
-      },
-      {
-        options: [
-          { name: "Health Flat", file: "Health_Flat" },
-          { name: "Tenacity", file: "Tenacity" },
-          { name: "Health Scaling", file: "Health_Scaling" }
-        ]
-      }
-    ];
+  const STAT_ROWS = [
+    {
+      options: [
+        { name: "Adaptive Force", file: "Adaptive_Force" },
+        { name: "Attack Speed", file: "Attack_Speed" },
+        { name: "Ability Haste", file: "Ability_Haste" }
+      ]
+    },
+    {
+      options: [
+        { name: "Adaptive Force", file: "Adaptive_Force" },
+        { name: "Movement Speed", file: "Movement_Speed" },
+        { name: "Health Scaling", file: "Health_Scaling" }
+      ]
+    },
+    {
+      options: [
+        { name: "Health Flat", file: "Health_Flat" },
+        { name: "Tenacity", file: "Tenacity" },
+        { name: "Health Scaling", file: "Health_Scaling" }
+      ]
+    }
+  ];
 
-    // ---------- LOAD INTRO DATA ----------
-    async function loadIntroData() {
-      try {
-        const res = await fetch('intro.json');
-        if (!res.ok) throw new Error('intro.json not found');
-        introData = await res.json();
-      } catch (e) {
-        console.warn('Could not load intro.json, using fallback message.');
-        introData = null;
-      }
-      // Show intro right away if no champion is selected yet
-      if (!document.querySelector('.champion-detail')) {
-        renderIntro();
-      }
+  // ---------- LOAD INTRO DATA ----------
+  async function loadIntroData() {
+    try {
+      const res = await fetch('intro.json');
+      if (!res.ok) throw new Error('intro.json not found');
+      introData = await res.json();
+    } catch (e) {
+      console.warn('Could not load intro.json, using fallback message.');
+      introData = null;
+    }
+    // Show intro right away if no champion is selected yet
+    if (!activeChampionItem) {
+      renderIntro();
+    }
+  }
+
+  function renderIntro() {
+    const infoPanel = document.getElementById('info-panel');
+    if (!introData || !introData.sections || introData.sections.length === 0) {
+      infoPanel.innerHTML = `<p class="placeholder-message" style="text-align:center;margin-top:5rem;font-size:1.3rem;color:#5a5244;">Click a champion to see matchup info</p>`;
+      return;
     }
 
-    function renderIntro() {
-      const infoPanel = document.getElementById('info-panel');
-      if (!introData || !introData.sections || introData.sections.length === 0) {
-        infoPanel.innerHTML = `<p class="placeholder-message" style="text-align:center;margin-top:5rem;font-size:1.3rem;color:#5a5244;">Click a champion to see matchup info</p>`;
-        return;
-      }
-
-      let html = `<div class="champion-detail">`;
-      if (introData.title) {
-        html += `<h2>${introData.title}</h2>`;
-      }
-      introData.sections.forEach(section => {
-        html += `<div class="info-slot"><h3>${section.heading || ''}</h3><p>${section.content || ''}</p></div>`;
-      });
-      html += `</div>`;
-      infoPanel.innerHTML = html;
+    let html = `<div class="champion-detail">`;
+    if (introData.title) {
+      html += `<h2>${introData.title}</h2>`;
     }
+    introData.sections.forEach(section => {
+      html += `<div class="info-slot"><h3>${section.heading || ''}</h3><p>${section.content || ''}</p></div>`;
+    });
+    html += `</div>`;
+    infoPanel.innerHTML = html;
+  }
 
-    // ---------- LOAD RUNE DEFINITIONS ----------
-    (async function loadRuneData() {
-      try {
-        const versionsRes = await fetch('https://ddragon.leagueoflegends.com/api/versions.json');
-        const versions = await versionsRes.json();
-        const latestVersion = versions[0];
-        const runesRes = await fetch(`https://ddragon.leagueoflegends.com/cdn/${latestVersion}/data/en_US/runesReforged.json`);
-        runeData = await runesRes.json();
-        runeData.forEach(tree => {
-          tree.slots.forEach(slot => {
-            slot.runes.forEach(rune => {
-              runeMap[rune.id] = { ...rune };
-            });
+  // ---------- RESET TO INTRO ----------
+  function resetToIntro() {
+    // Deselect active champion in sidebar
+    if (activeChampionItem) {
+      activeChampionItem.classList.remove('active');
+      activeChampionItem = null;
+    }
+    // Reset splash to High Noon Locke
+    setSplashBackground(null);
+    // Render intro
+    renderIntro();
+  }
+
+  // ---------- LOAD RUNE DEFINITIONS ----------
+  (async function loadRuneData() {
+    try {
+      const versionsRes = await fetch('https://ddragon.leagueoflegends.com/api/versions.json');
+      const versions = await versionsRes.json();
+      const latestVersion = versions[0];
+      const runesRes = await fetch(`https://ddragon.leagueoflegends.com/cdn/${latestVersion}/data/en_US/runesReforged.json`);
+      runeData = await runesRes.json();
+      runeData.forEach(tree => {
+        tree.slots.forEach(slot => {
+          slot.runes.forEach(rune => {
+            runeMap[rune.id] = { ...rune };
           });
         });
-      } catch (e) {
-        console.error('Failed to load rune data:', e);
-      }
-    })();
-
-    function safeFileName(name) {
-      return name
-        .trim()
-        .replace(/[^a-zA-Z0-9 \-\'\.]/g, '')
-        .replace(/\s+/g, '_')
-        .replace(/'/g, '')
-        .replace(/\.+/g, '_')
-        .replace(/_+/g, '_')
-        .replace(/^_|_$/g, '')
-        || 'unknown';
+      });
+    } catch (e) {
+      console.error('Failed to load rune data:', e);
     }
+  })();
 
-    // ---------- BUILD CHAMPION LIST ----------
-    (async () => {
-      const championList = document.getElementById('champion-list');
+  function safeFileName(name) {
+    return name
+      .trim()
+      .replace(/[^a-zA-Z0-9 \-\'\.]/g, '')
+      .replace(/\s+/g, '_')
+      .replace(/'/g, '')
+      .replace(/\.+/g, '_')
+      .replace(/_+/g, '_')
+      .replace(/^_|_$/g, '')
+      || 'unknown';
+  }
 
-      try {
-        const versionsRes = await fetch('https://ddragon.leagueoflegends.com/api/versions.json');
-        const versions = await versionsRes.json();
-        const latestVersion = versions[0];
-        currentPatchVersion = latestVersion;
+  // ---------- BUILD CHAMPION LIST ----------
+  (async () => {
+    const championList = document.getElementById('champion-list');
 
-        const champsRes = await fetch(
-          `https://ddragon.leagueoflegends.com/cdn/${latestVersion}/data/en_US/champion.json`
-        );
-        const champsData = await champsRes.json();
-        const champions = Object.values(champsData.data);
+    try {
+      const versionsRes = await fetch('https://ddragon.leagueoflegends.com/api/versions.json');
+      const versions = await versionsRes.json();
+      const latestVersion = versions[0];
+      currentPatchVersion = latestVersion;
 
-        champions.forEach(champ => {
-          const item = document.createElement('div');
-          item.className = 'champion-item';
-          item.dataset.championId = champ.id;
-          item.dataset.championName = champ.name.toLowerCase();
+      const champsRes = await fetch(
+        `https://ddragon.leagueoflegends.com/cdn/${latestVersion}/data/en_US/champion.json`
+      );
+      const champsData = await champsRes.json();
+      const champions = Object.values(champsData.data);
 
-          const searchTerms = new Set();
-          searchTerms.add(champ.name.toLowerCase());
+      champions.forEach(champ => {
+        const item = document.createElement('div');
+        item.className = 'champion-item';
+        item.dataset.championId = champ.id;
+        item.dataset.championName = champ.name.toLowerCase();
 
-          for (const [abbr, target] of Object.entries(ABBREV_TO_CHAMP)) {
-            if (Array.isArray(target)) {
-              if (target.some(t => t.toLowerCase() === champ.name.toLowerCase())) {
-                searchTerms.add(abbr.toLowerCase());
-              }
-            } else {
-              if (target.toLowerCase() === champ.name.toLowerCase()) {
-                searchTerms.add(abbr.toLowerCase());
-              }
+        const searchTerms = new Set();
+        searchTerms.add(champ.name.toLowerCase());
+
+        for (const [abbr, target] of Object.entries(ABBREV_TO_CHAMP)) {
+          if (Array.isArray(target)) {
+            if (target.some(t => t.toLowerCase() === champ.name.toLowerCase())) {
+              searchTerms.add(abbr.toLowerCase());
+            }
+          } else {
+            if (target.toLowerCase() === champ.name.toLowerCase()) {
+              searchTerms.add(abbr.toLowerCase());
             }
           }
-          championSearchTerms[champ.id] = Array.from(searchTerms);
+        }
+        championSearchTerms[champ.id] = Array.from(searchTerms);
 
-          const img = document.createElement('img');
-          img.src = `https://ddragon.leagueoflegends.com/cdn/${latestVersion}/img/champion/${champ.image.full}`;
-          img.alt = champ.name;
-          img.loading = 'lazy';
+        const img = document.createElement('img');
+        img.src = `https://ddragon.leagueoflegends.com/cdn/${latestVersion}/img/champion/${champ.image.full}`;
+        img.alt = champ.name;
+        img.loading = 'lazy';
 
-          const nameSpan = document.createElement('span');
-          nameSpan.textContent = champ.name;
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = champ.name;
 
-          item.appendChild(img);
-          item.appendChild(nameSpan);
+        item.appendChild(img);
+        item.appendChild(nameSpan);
 
-          item.addEventListener('click', () => {
-            document.querySelectorAll('.champion-item').forEach(el => el.classList.remove('active'));
-            item.classList.add('active');
-            loadChampionInfo(champ.id, champ.name);
-          });
-
-          championList.appendChild(item);
-          allChampionItems.push(item);
+        item.addEventListener('click', () => {
+          // Deselect previous, select new
+          if (activeChampionItem) {
+            activeChampionItem.classList.remove('active');
+          }
+          activeChampionItem = item;
+          item.classList.add('active');
+          loadChampionInfo(champ.id, champ.name);
         });
 
-        preloadSplashImages(champions);
-        setupSearch();
-
-        // After building the list, load the intro
-        loadIntroData();
-
-      } catch (error) {
-        championList.innerHTML = '<p style="color:red;padding:1rem;">Could not load champions.</p>';
-        console.error(error);
-      }
-    })();
-
-    function preloadSplashImages(champions) {
-      champions.forEach(champ => {
-        const img = new Image();
-        img.src = CUSTOM_SPLASHES[champ.id] ||
-                  `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${champ.id}_0.jpg?v=${currentPatchVersion}`;
+        championList.appendChild(item);
+        allChampionItems.push(item);
       });
+
+      preloadSplashImages(champions);
+      setupSearch();
+
+      // After building the list, load the intro
+      loadIntroData();
+
+    } catch (error) {
+      championList.innerHTML = '<p style="color:red;padding:1rem;">Could not load champions.</p>';
+      console.error(error);
     }
+  })();
 
-    function setupSearch() {
-      const searchInput = document.getElementById('search-input');
-      const championList = document.getElementById('champion-list');
+  function preloadSplashImages(champions) {
+    champions.forEach(champ => {
+      const img = new Image();
+      img.src = CUSTOM_SPLASHES[champ.id] ||
+                `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${champ.id}_0.jpg?v=${currentPatchVersion}`;
+    });
+  }
 
-      searchInput.addEventListener('input', () => {
-        const query = searchInput.value.toLowerCase().trim();
-        let visibleCount = 0;
+  function setupSearch() {
+    const searchInput = document.getElementById('search-input');
+    const championList = document.getElementById('champion-list');
 
-        allChampionItems.forEach(item => {
-          const terms = championSearchTerms[item.dataset.championId] || [item.dataset.championName];
-          const matches = query === '' || terms.some(term => term.includes(query));
-          if (matches) {
-            item.style.display = 'flex';
-            visibleCount++;
-          } else {
-            item.style.display = 'none';
-          }
-        });
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.toLowerCase().trim();
+      let visibleCount = 0;
 
-        let noResultsEl = document.querySelector('.no-results');
-        if (visibleCount === 0) {
-          if (!noResultsEl) {
-            noResultsEl = document.createElement('p');
-            noResultsEl.className = 'no-results';
-            noResultsEl.textContent = 'No champions found.';
-            championList.appendChild(noResultsEl);
-          }
+      allChampionItems.forEach(item => {
+        const terms = championSearchTerms[item.dataset.championId] || [item.dataset.championName];
+        const matches = query === '' || terms.some(term => term.includes(query));
+        if (matches) {
+          item.style.display = 'flex';
+          visibleCount++;
         } else {
-          if (noResultsEl) noResultsEl.remove();
+          item.style.display = 'none';
         }
       });
-    }
 
-    function getDifficultyColor(value) {
-      if (value >= 10) return { bg: '#cc0000', text: 'black' };
-      if (value >= 9)  return { bg: '#ea4335', text: 'black' };
-      if (value >= 8)  return { bg: '#ea6435', text: 'black' };
-      if (value >= 7)  return { bg: '#e69138', text: 'black' };
-      if (value >= 6)  return { bg: '#f1c232', text: 'black' };
-      if (value >= 5)  return { bg: '#ffd966', text: 'black' };
-      if (value >= 4)  return { bg: '#d7e455', text: 'black' };
-      if (value >= 3)  return { bg: '#90d542', text: 'black' };
-      if (value >= 2)  return { bg: '#4da029', text: 'black' };
-      return              { bg: '#337432', text: 'black' };
-    }
-
-    function setSplashBackground(championId) {
-      const splashBg = document.getElementById('splash-bg');
-      if (!championId) {
-        splashBg.style.backgroundImage = "url('images/splashes/High_Noon_Locke.jpg')";
-        return;
-      }
-      const splashUrl = CUSTOM_SPLASHES[championId] ||
-        `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${championId}_0.jpg?v=${currentPatchVersion}`;
-      splashBg.style.backgroundImage = `url('${splashUrl}')`;
-    }
-
-    async function loadChampionInfo(championId, championName) {
-      const infoPanel = document.getElementById('info-panel');
-      setSplashBackground(championId);
-
-      let data;
-      if (dataCache[championId]) {
-        data = dataCache[championId];
+      let noResultsEl = document.querySelector('.no-results');
+      if (visibleCount === 0) {
+        if (!noResultsEl) {
+          noResultsEl = document.createElement('p');
+          noResultsEl.className = 'no-results';
+          noResultsEl.textContent = 'No champions found.';
+          championList.appendChild(noResultsEl);
+        }
       } else {
-        let loadingTimer = setTimeout(() => {
-          infoPanel.classList.add('loading');
-        }, 300);
-
-        try {
-          const res = await fetch(`champions/${championId}.json`);
-          if (!res.ok) throw new Error('Not found');
-          data = await res.json();
-          dataCache[championId] = data;
-        } catch (err) {
-          data = null;
-        } finally {
-          clearTimeout(loadingTimer);
-          infoPanel.classList.remove('loading');
-        }
+        if (noResultsEl) noResultsEl.remove();
       }
+    });
+  }
 
-      renderChampionInfo(championId, championName, data);
+  function getDifficultyColor(value) {
+    if (value >= 10) return { bg: '#cc0000', text: 'black' };
+    if (value >= 9)  return { bg: '#ea4335', text: 'black' };
+    if (value >= 8)  return { bg: '#ea6435', text: 'black' };
+    if (value >= 7)  return { bg: '#e69138', text: 'black' };
+    if (value >= 6)  return { bg: '#f1c232', text: 'black' };
+    if (value >= 5)  return { bg: '#ffd966', text: 'black' };
+    if (value >= 4)  return { bg: '#d7e455', text: 'black' };
+    if (value >= 3)  return { bg: '#90d542', text: 'black' };
+    if (value >= 2)  return { bg: '#4da029', text: 'black' };
+    return              { bg: '#337432', text: 'black' };
+  }
+
+  function setSplashBackground(championId) {
+    const splashBg = document.getElementById('splash-bg');
+    if (!championId) {
+      splashBg.style.backgroundImage = "url('images/splashes/High_Noon_Locke.jpg')";
+      return;
+    }
+    const splashUrl = CUSTOM_SPLASHES[championId] ||
+      `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${championId}_0.jpg?v=${currentPatchVersion}`;
+    splashBg.style.backgroundImage = `url('${splashUrl}')`;
+  }
+
+  async function loadChampionInfo(championId, championName) {
+    const infoPanel = document.getElementById('info-panel');
+    setSplashBackground(championId);
+
+    let data;
+    if (dataCache[championId]) {
+      data = dataCache[championId];
+    } else {
+      let loadingTimer = setTimeout(() => {
+        infoPanel.classList.add('loading');
+      }, 300);
+
+      try {
+        const res = await fetch(`champions/${championId}.json`);
+        if (!res.ok) throw new Error('Not found');
+        data = await res.json();
+        dataCache[championId] = data;
+      } catch (err) {
+        data = null;
+      } finally {
+        clearTimeout(loadingTimer);
+        infoPanel.classList.remove('loading');
+      }
     }
 
-    function renderFullRunePage(runes) {
-      if (!runeData || !runes.primary) return '';
+    renderChampionInfo(championId, championName, data);
+  }
 
-      const primaryTree = runeData.find(t => t.name === runes.primary.style);
-      const secondaryTree = runes.secondary ? runeData.find(t => t.name === runes.secondary.style) : null;
+  function renderFullRunePage(runes) {
+    if (!runeData || !runes.primary) return '';
 
-      function getRuneImagePath(runeName) {
-        return `images/runes/${safeFileName(runeName)}.png`;
-      }
+    const primaryTree = runeData.find(t => t.name === runes.primary.style);
+    const secondaryTree = runes.secondary ? runeData.find(t => t.name === runes.secondary.style) : null;
 
-      function getTreeIconPath(treeName) {
-        return `images/runes/${safeFileName(treeName)}.png`;
-      }
+    function getRuneImagePath(runeName) {
+      return `images/runes/${safeFileName(runeName)}.png`;
+    }
 
-      let html = '';
+    function getTreeIconPath(treeName) {
+      return `images/runes/${safeFileName(treeName)}.png`;
+    }
 
-      if (primaryTree) {
-        html += `<div class="rune-tree">`;
-        html += `<h4><img src="${getTreeIconPath(primaryTree.name)}" class="tree-icon" alt=""/>${primaryTree.name}</h4>`;
+    let html = '';
 
-        const keystoneSlot = primaryTree.slots[0];
-        html += `<div class="rune-slot-row keystone-row">`;
-        keystoneSlot.runes.forEach(rune => {
-          const isSelected = rune.name === runes.primary.keystone;
-          html += `<img src="${getRuneImagePath(rune.name)}" class="rune-option keystone-option ${isSelected ? 'selected' : 'unselected'}" alt="${rune.name}" loading="lazy"/>`;
+    if (primaryTree) {
+      html += `<div class="rune-tree">`;
+      html += `<h4><img src="${getTreeIconPath(primaryTree.name)}" class="tree-icon" alt=""/>${primaryTree.name}</h4>`;
+
+      const keystoneSlot = primaryTree.slots[0];
+      html += `<div class="rune-slot-row keystone-row">`;
+      keystoneSlot.runes.forEach(rune => {
+        const isSelected = rune.name === runes.primary.keystone;
+        html += `<img src="${getRuneImagePath(rune.name)}" class="rune-option keystone-option ${isSelected ? 'selected' : 'unselected'}" alt="${rune.name}" loading="lazy"/>`;
+      });
+      html += `</div>`;
+
+      for (let i = 1; i <= 3; i++) {
+        const slot = primaryTree.slots[i];
+        if (!slot) continue;
+        const selectedKey = i === 1 ? runes.primary.row1 : (i === 2 ? runes.primary.row2 : runes.primary.row3);
+        html += `<div class="rune-slot-row">`;
+        slot.runes.forEach(rune => {
+          const isSelected = rune.name === selectedKey;
+          html += `<img src="${getRuneImagePath(rune.name)}" class="rune-option ${isSelected ? 'selected' : 'unselected'}" alt="${rune.name}" loading="lazy"/>`;
         });
         html += `</div>`;
-
-        for (let i = 1; i <= 3; i++) {
-          const slot = primaryTree.slots[i];
-          if (!slot) continue;
-          const selectedKey = i === 1 ? runes.primary.row1 : (i === 2 ? runes.primary.row2 : runes.primary.row3);
-          html += `<div class="rune-slot-row">`;
-          slot.runes.forEach(rune => {
-            const isSelected = rune.name === selectedKey;
-            html += `<img src="${getRuneImagePath(rune.name)}" class="rune-option ${isSelected ? 'selected' : 'unselected'}" alt="${rune.name}" loading="lazy"/>`;
-          });
-          html += `</div>`;
-        }
-
-        html += `</div>`;
       }
 
-      if (secondaryTree && runes.secondary) {
-        html += `<div class="rune-tree">`;
-        html += `<h4><img src="${getTreeIconPath(secondaryTree.name)}" class="tree-icon" alt=""/>${secondaryTree.name}</h4>`;
-
-        for (let i = 1; i <= 3; i++) {
-          const slot = secondaryTree.slots[i];
-          if (!slot) continue;
-          html += `<div class="rune-slot-row">`;
-          slot.runes.forEach(rune => {
-            const isSelected = rune.name === runes.secondary.rune1 || rune.name === runes.secondary.rune2;
-            html += `<img src="${getRuneImagePath(rune.name)}" class="rune-option ${isSelected ? 'selected' : 'unselected'}" alt="${rune.name}" loading="lazy"/>`;
-          });
-          html += `</div>`;
-        }
-
-        html += `</div>`;
-      }
-
-      let statsTreeHTML = '';
-      if (runes.stats && Array.isArray(runes.stats) && runes.stats.length > 0) {
-        statsTreeHTML = `<div class="rune-tree">`;
-        statsTreeHTML += `<h4>Shards</h4>`;
-        statsTreeHTML += `<div class="stats-container">`;
-        for (let rowIdx = 0; rowIdx < STAT_ROWS.length; rowIdx++) {
-          const rowOptions = STAT_ROWS[rowIdx].options;
-          const selectedPath = runes.stats[rowIdx] || '';
-          const selectedBase = selectedPath.split('/').pop().replace('.png', '');
-
-          statsTreeHTML += `<div class="rune-slot-row">`;
-          rowOptions.forEach(opt => {
-            const isSelected = (opt.file === selectedBase);
-            const imgPath = `images/runes/${opt.file}.png`;
-            statsTreeHTML += `<img src="${imgPath}" class="rune-option ${isSelected ? 'selected' : 'unselected'}" alt="${opt.name}" loading="lazy"/>`;
-          });
-          statsTreeHTML += `</div>`;
-        }
-        statsTreeHTML += `</div></div>`;
-      }
-
-      return `<div class="rune-page">${html}${statsTreeHTML}</div>`;
+      html += `</div>`;
     }
 
-    function renderChampionInfo(championId, championName, data) {
-      const infoPanel = document.getElementById('info-panel');
+    if (secondaryTree && runes.secondary) {
+      html += `<div class="rune-tree">`;
+      html += `<h4><img src="${getTreeIconPath(secondaryTree.name)}" class="tree-icon" alt=""/>${secondaryTree.name}</h4>`;
 
-      let html = `<div class="champion-detail">`;
-      html += `<h2>${championName}</h2>`;
-
-      if (data) {
-        const diffNum = parseFloat(data.difficulty);
-        if (!isNaN(diffNum)) {
-          const { bg, text } = getDifficultyColor(diffNum);
-          html += `<div class="info-slot"><h3>Matchup Difficulty</h3><span class="difficulty-badge" style="background-color: ${bg}; color: ${text};">${diffNum} / 10</span></div>`;
-        } else {
-          html += `<div class="info-slot"><h3>Matchup Difficulty</h3><span class="difficulty-badge" style="background:#2a2a18; color:#f0c27a;">${data.difficulty || '?'}</span></div>`;
-        }
-
-        html += `<div class="info-slot"><h3>General Tip</h3><p>${data.generalTip || ''}</p></div>`;
-
-        html += `<div class="phases-row">`;
-        html += `<div class="phase-slot"><h4>Levels 1‑5</h4><p>${data.earlyGame || 'No info yet.'}</p></div>`;
-        html += `<div class="phase-slot"><h4>Levels 6‑10</h4><p>${data.midGame || 'No info yet.'}</p></div>`;
-        html += `<div class="phase-slot"><h4>Levels 11‑18</h4><p>${data.lateGame || 'No info yet.'}</p></div>`;
+      for (let i = 1; i <= 3; i++) {
+        const slot = secondaryTree.slots[i];
+        if (!slot) continue;
+        html += `<div class="rune-slot-row">`;
+        slot.runes.forEach(rune => {
+          const isSelected = rune.name === runes.secondary.rune1 || rune.name === runes.secondary.rune2;
+          html += `<img src="${getRuneImagePath(rune.name)}" class="rune-option ${isSelected ? 'selected' : 'unselected'}" alt="${rune.name}" loading="lazy"/>`;
+        });
         html += `</div>`;
+      }
 
-        // Items
-        if (data.items) {
-          if (typeof data.items === 'object' && !Array.isArray(data.items)) {
-            html += `<div class="info-slot"><h3>Recommended Items</h3><div class="phases-row">`;
-            const itemPhases = ['starter', 'core', 'situational'];
-            const labels = ['Starter Items', 'Core Items', 'Situational Items'];
-            itemPhases.forEach((phase, idx) => {
-              const phaseItems = data.items[phase] || [];
-              html += `<div class="phase-slot"><h4>${labels[idx]}</h4><div class="items-row">`;
-              phaseItems.forEach(url => {
-                html += `<img src="${url}" alt="Item" class="item-icon" loading="lazy" />`;
-              });
-              html += `</div></div>`;
-            });
-            html += `</div></div>`;
-          } else if (Array.isArray(data.items) && data.items.length > 0) {
-            html += `<div class="info-slot"><h3>Recommended Items</h3><div class="items-row">`;
-            data.items.forEach(url => {
+      html += `</div>`;
+    }
+
+    let statsTreeHTML = '';
+    if (runes.stats && Array.isArray(runes.stats) && runes.stats.length > 0) {
+      statsTreeHTML = `<div class="rune-tree">`;
+      statsTreeHTML += `<h4>Shards</h4>`;
+      statsTreeHTML += `<div class="stats-container">`;
+      for (let rowIdx = 0; rowIdx < STAT_ROWS.length; rowIdx++) {
+        const rowOptions = STAT_ROWS[rowIdx].options;
+        const selectedPath = runes.stats[rowIdx] || '';
+        const selectedBase = selectedPath.split('/').pop().replace('.png', '');
+
+        statsTreeHTML += `<div class="rune-slot-row">`;
+        rowOptions.forEach(opt => {
+          const isSelected = (opt.file === selectedBase);
+          const imgPath = `images/runes/${opt.file}.png`;
+          statsTreeHTML += `<img src="${imgPath}" class="rune-option ${isSelected ? 'selected' : 'unselected'}" alt="${opt.name}" loading="lazy"/>`;
+        });
+        statsTreeHTML += `</div>`;
+      }
+      statsTreeHTML += `</div></div>`;
+    }
+
+    return `<div class="rune-page">${html}${statsTreeHTML}</div>`;
+  }
+
+  // ---------- RENDER FULL CHAMPION INFO (with back button) ----------
+  function renderChampionInfo(championId, championName, data) {
+    const infoPanel = document.getElementById('info-panel');
+
+    let html = `<div class="champion-detail">`;
+    // Back button at the top
+    html += `<div style="margin-bottom:0.8rem;"><span onclick="resetToIntro()" style="color:#c8aa6e; cursor:pointer; font-weight:bold; user-select:none;">← Intro</span></div>`;
+    html += `<h2>${championName}</h2>`;
+
+    if (data) {
+      const diffNum = parseFloat(data.difficulty);
+      if (!isNaN(diffNum)) {
+        const { bg, text } = getDifficultyColor(diffNum);
+        html += `<div class="info-slot"><h3>Matchup Difficulty</h3><span class="difficulty-badge" style="background-color: ${bg}; color: ${text};">${diffNum} / 10</span></div>`;
+      } else {
+        html += `<div class="info-slot"><h3>Matchup Difficulty</h3><span class="difficulty-badge" style="background:#2a2a18; color:#f0c27a;">${data.difficulty || '?'}</span></div>`;
+      }
+
+      html += `<div class="info-slot"><h3>General Tip</h3><p>${data.generalTip || ''}</p></div>`;
+
+      html += `<div class="phases-row">`;
+      html += `<div class="phase-slot"><h4>Levels 1‑5</h4><p>${data.earlyGame || 'No info yet.'}</p></div>`;
+      html += `<div class="phase-slot"><h4>Levels 6‑10</h4><p>${data.midGame || 'No info yet.'}</p></div>`;
+      html += `<div class="phase-slot"><h4>Levels 11‑18</h4><p>${data.lateGame || 'No info yet.'}</p></div>`;
+      html += `</div>`;
+
+      // Items
+      if (data.items) {
+        if (typeof data.items === 'object' && !Array.isArray(data.items)) {
+          html += `<div class="info-slot"><h3>Recommended Items</h3><div class="phases-row">`;
+          const itemPhases = ['starter', 'core', 'situational'];
+          const labels = ['Starter Items', 'Core Items', 'Situational Items'];
+          itemPhases.forEach((phase, idx) => {
+            const phaseItems = data.items[phase] || [];
+            html += `<div class="phase-slot"><h4>${labels[idx]}</h4><div class="items-row">`;
+            phaseItems.forEach(url => {
               html += `<img src="${url}" alt="Item" class="item-icon" loading="lazy" />`;
             });
             html += `</div></div>`;
-          }
-        } else if (data.itemsImage) {
-          html += `<div class="info-slot"><h3>Recommended Items</h3>`;
-          html += `<img src="${data.itemsImage}" alt="Items vs ${championName}" class="build-image" loading="lazy" />`;
-          html += `</div>`;
+          });
+          html += `</div></div>`;
+        } else if (Array.isArray(data.items) && data.items.length > 0) {
+          html += `<div class="info-slot"><h3>Recommended Items</h3><div class="items-row">`;
+          data.items.forEach(url => {
+            html += `<img src="${url}" alt="Item" class="item-icon" loading="lazy" />`;
+          });
+          html += `</div></div>`;
         }
-
-        // Runes
-        html += `<div class="info-slot"><h3>Recommended Runes</h3>`;
-        try {
-          if (data.runes) {
-            if (data.runes.primary && data.runes.primary.style) {
-              html += renderFullRunePage(data.runes);
-            } else if (Array.isArray(data.runes)) {
-              html += `<div class="items-row">`;
-              data.runes.forEach(runeUrl => {
-                html += `<img src="${runeUrl}" alt="Rune" class="item-icon" loading="lazy" />`;
-              });
-              html += `</div>`;
-            } else {
-              html += `<p>Rune data format not recognised.</p>`;
-            }
-          } else {
-            html += `<p>No runes configured yet.</p>`;
-          }
-        } catch (err) {
-          console.error('Error rendering runes:', err);
-          html += `<p style="color:red;">Could not display runes – check console for details.</p>`;
-        }
+      } else if (data.itemsImage) {
+        html += `<div class="info-slot"><h3>Recommended Items</h3>`;
+        html += `<img src="${data.itemsImage}" alt="Items vs ${championName}" class="build-image" loading="lazy" />`;
         html += `</div>`;
-
-        html += `<div class="info-slot"><h3>Matchup Note</h3><p>${data.matchupNote || ''}</p></div>`;
-      } else {
-        html += `<div class="info-slot"><h3>Coming Soon</h3><p>No guide written yet.</p></div>`;
       }
 
-      infoPanel.innerHTML = html;
+      // Runes
+      html += `<div class="info-slot"><h3>Recommended Runes</h3>`;
+      try {
+        if (data.runes) {
+          if (data.runes.primary && data.runes.primary.style) {
+            html += renderFullRunePage(data.runes);
+          } else if (Array.isArray(data.runes)) {
+            html += `<div class="items-row">`;
+            data.runes.forEach(runeUrl => {
+              html += `<img src="${runeUrl}" alt="Rune" class="item-icon" loading="lazy" />`;
+            });
+            html += `</div>`;
+          } else {
+            html += `<p>Rune data format not recognised.</p>`;
+          }
+        } else {
+          html += `<p>No runes configured yet.</p>`;
+        }
+      } catch (err) {
+        console.error('Error rendering runes:', err);
+        html += `<p style="color:red;">Could not display runes – check console for details.</p>`;
+      }
+      html += `</div>`;
+
+      html += `<div class="info-slot"><h3>Matchup Note</h3><p>${data.matchupNote || ''}</p></div>`;
+    } else {
+      html += `<div class="info-slot"><h3>Coming Soon</h3><p>No guide written yet.</p></div>`;
     }
-  </script>
+
+    infoPanel.innerHTML = html;
+  }
+</script>
 </body>
 </html>
