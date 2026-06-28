@@ -231,30 +231,66 @@
 
     // ---------- NEW FUNCTION: SHOW CREATORS ----------
     function showCreators() {
-      // Clear any active champion
       if (activeChampionItem) {
         activeChampionItem.classList.remove('active');
         activeChampionItem = null;
       }
-      // Show the back button so user can return to intro
       introBackBtn.style.display = 'inline';
-      // Reset splash to default
       setSplashBackground(null);
 
       const infoPanel = document.getElementById('info-panel');
-      infoPanel.innerHTML = '<p style="text-align:center;margin-top:2rem;">Loading creators...</p>';
+      infoPanel.innerHTML = '<p style="text-align:center;margin-top:2rem;">Loading leaderboard...</p>';
 
-      fetch('creators.html')
+      fetch('leaderboard.json')
         .then(response => {
-          if (!response.ok) throw new Error('File not found');
-          return response.text();
+          if (!response.ok) throw new Error('Leaderboard not found');
+          return response.json();
         })
-        .then(html => {
+        .then(players => {
+          if (!players || players.length === 0) {
+            infoPanel.innerHTML = '<p style="text-align:center;margin-top:2rem;">No creators ranked yet.</p>';
+            return;
+          }
+
+          const tierUrl = (tier) => `images/ranked-emblems/${tier.toLowerCase()}.png`;
+
+          let html = `
+            <div class="champion-detail">
+              <h2>Locke Content Creators – LP Leaderboard</h2>
+              <div class="info-slot">
+                <table class="leaderboard-table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Streamer</th>
+                      <th>Rank</th>
+                      <th>LP</th>
+                      <th>Win Rate</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+          `;
+
+          players.forEach((p, index) => {
+            const winRate = p.winRate || '0';
+            const tierBadge = `<img src="${tierUrl(p.tier)}" class="tier-badge" alt="${p.tier}" /> ${p.tier} ${p.rank}`;
+            html += `
+              <tr>
+                <td>${index + 1}</td>
+                <td><a href="https://twitch.tv/${p.twitch}" target="_blank">${p.displayName}</a></td>
+                <td>${tierBadge}</td>
+                <td>${p.leaguePoints} LP</td>
+                <td>${winRate}%</td>
+              </tr>
+            `;
+          });
+
+          html += `</tbody></table></div></div>`;
           infoPanel.innerHTML = html;
         })
         .catch(err => {
-          console.error('Failed to load creators.html:', err);
-          infoPanel.innerHTML = '<p style="text-align:center;margin-top:2rem;color:red;">Could not load content creators list.</p>';
+          console.error(err);
+          infoPanel.innerHTML = '<p style="text-align:center;margin-top:2rem;color:red;">Leaderboard data unavailable right now.</p>';
         });
     }
 
