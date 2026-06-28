@@ -1,9 +1,9 @@
 {
   "difficulty": 7,
   "matchupZones": [
-  { "label": "Early Game", "text": "2" },
-  { "label": "Mid Game", "text": "6" },
-  { "label": "Late Game", "text": "9" }
+  { "label": "Early Game: ", "text": "2" },
+  { "label": "Mid Game: ", "text": "6" },
+  { "label": "Late Game: ", "text": "9" }
 ],
   "videoTitle": "this is the title for the aatrox video",
   "videoUrl": "https://www.youtube.com/watch?v=1N5SDXSVZHE",

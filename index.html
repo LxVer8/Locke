@@ -597,7 +597,7 @@
         // ---------- Matchup Difficulty (identical style to Summoner Spells & Abilities) ----------
         html += `<div class="info-slot"><h3>Matchup Difficulty</h3><div class="phases-row">`;
 
-        // Left card – Difficulty + 3 matchup zones
+        // Left card – Difficulty + three phase difficulty columns
         html += `<div class="phase-slot difficulty-card">`;
         html += `<h4>Difficulty</h4>`;
         const diffNum = parseFloat(data.difficulty);
@@ -608,13 +608,15 @@
           html += `<span class="difficulty-badge" style="background:#2a2a18; color:#f0c27a;">${data.difficulty || '?'}</span>`;
         }
 
-        // Three smaller matchup info zones (only shown if data.matchupZones exists)
-        if (data.matchupZones && Array.isArray(data.matchupZones) && data.matchupZones.length === 3) {
-          html += `<div class="matchup-zones">`;
-          data.matchupZones.forEach(zone => {
-            html += `<div class="matchup-zone">`;
-            html += `<span class="matchup-zone-label">${zone.label || ''}</span>`;
-            html += `<span class="matchup-zone-text">${zone.text || ''}</span>`;
+        // Three phase difficulty columns (if data.phaseDifficulties exists and has exactly 3 items)
+        if (data.phaseDifficulties && Array.isArray(data.phaseDifficulties) && data.phaseDifficulties.length === 3) {
+          html += `<div class="phase-difficulties-row">`;
+          data.phaseDifficulties.forEach(phase => {
+            const pVal = parseFloat(phase.value);
+            const { bg, text } = !isNaN(pVal) ? getDifficultyColor(pVal) : { bg: '#2a2a18', text: '#f0c27a' };
+            html += `<div class="phase-diff-col">`;
+            html += `<span class="phase-diff-label">${phase.label || ''}</span>`;
+            html += `<span class="phase-diff-badge" style="background-color: ${bg}; color: ${text};">${!isNaN(pVal) ? pVal : '?'} / 10</span>`;
             html += `</div>`;
           });
           html += `</div>`;
