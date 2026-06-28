@@ -616,7 +616,7 @@
             const { bg, text } = !isNaN(pVal) ? getDifficultyColor(pVal) : { bg: '#2a2a18', text: '#f0c27a' };
             html += `<div class="phase-diff-col">`;
             html += `<span class="phase-diff-label">${phase.label || ''}</span>`;
-            html += `<span class="phase-diff-badge" style="background-color: ${bg}; color: ${text};">${!isNaN(pVal) ? pVal : '?'} / 10</span>`;
+            html += `<span class="difficulty-badge" style="background-color: ${bg}; color: ${text};">${!isNaN(pVal) ? pVal : '?'} / 10</span>`;
             html += `</div>`;
           });
           html += `</div>`;
