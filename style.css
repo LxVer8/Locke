@@ -588,3 +588,10 @@ header h1 {
   flex: 0 0 auto !important;
   margin-left: auto;
 }
+
+.difficulty-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
