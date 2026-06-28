@@ -271,7 +271,7 @@ header h1 {
   font-size: 1rem;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: #8b7a62;
+  color: #C8AA6E;
   margin-bottom: 0.6rem;
 }
 
@@ -560,5 +560,30 @@ header h1 {
 
 .no-video {
   color: #666;
+  font-style: italic;
+}
+
+/* Video badge – same pill shape as difficulty badge, but black background */
+.video-badge {
+  display: inline-block;
+  padding: 0.2rem 1rem;
+  border-radius: 20px;
+  font-weight: bold;
+  background: #1a1a1a;
+  color: #f0c27a;
+  border: 1px solid #f0c27a;
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+}
+.video-badge:hover {
+  background: #f0c27a;
+  color: #1a1a1a;
+}
+
+/* Author credit – shown below the badge */
+.video-author {
+  margin-top: 0.3rem;
+  font-size: 0.8rem;
+  color: #8b7a62;
   font-style: italic;
 }
