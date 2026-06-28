@@ -252,22 +252,6 @@
       line-height: 1.5;
     }
 
-        /* Summoner spells row – like items but slightly smaller */
-    .summoners-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 0.5rem;
-    }
-    .summoner-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 8px;
-      border: 2px solid #4a3e2c;
-      background: #0f0f1a;
-      object-fit: cover;
-    }
-
         .info-content ul, .info-content ol {
       padding-left: 1.5rem;
       color: #ddd6c8;
@@ -952,22 +936,12 @@
         }
 
         html += `<div class="info-slot"><h3>General Tip</h3><p>${data.generalTip || ''}</p></div>`;
-        html += `</div>`;   // close phases-row
 
-        // ---------- SUMMONER SPELLS ----------
-        if (data.summoners && Array.isArray(data.summoners) && data.summoners.length > 0) {
-          html += `<div class="info-slot"><h3>Summoner Spells</h3><div class="summoners-row">`;
-          data.summoners.forEach(spellName => {
-            const spellUrl = `https://ddragon.leagueoflegends.com/cdn/${currentPatchVersion}/img/spell/Summoner${spellName}.png`;
-            html += `<img src="${spellUrl}" alt="${spellName}" class="summoner-icon" loading="lazy" />`;
-          });
-          html += `</div></div>`;
-        }
-
-        // ---------- SKILL ORDER ----------
-        if (data.skillOrder) {
-          html += `<div class="info-slot"><h3>Skill Order</h3><p>${data.skillOrder}</p></div>`;
-        }
+        html += `<div class="phases-row">`;
+        html += `<div class="phase-slot"><h4>Levels 1‑5</h4><p>${data.earlyGame || 'No info yet.'}</p></div>`;
+        html += `<div class="phase-slot"><h4>Levels 6‑10</h4><p>${data.midGame || 'No info yet.'}</p></div>`;
+        html += `<div class="phase-slot"><h4>Levels 11‑18</h4><p>${data.lateGame || 'No info yet.'}</p></div>`;
+        html += `</div>`;
 
         // Items
         if (data.items) {
