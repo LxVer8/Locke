@@ -34,6 +34,7 @@
       background-color: rgba(10, 10, 15, 0.45);
       background-blend-mode: multiply;
       transition: background-image 0.15s ease;
+      /* Default background is set inline in the HTML */
     }
 
     .splash-background.no-splash {
@@ -155,7 +156,6 @@
       text-align: center;
     }
 
-    /* Info panel – now with relative positioning for spinner */
     .info-panel {
       flex: 1;
       padding: 2rem;
@@ -165,7 +165,6 @@
       position: relative;
     }
 
-    /* Subtle loading spinner – appears after 300ms */
     .info-panel.loading::after {
       content: "";
       position: absolute;
@@ -413,7 +412,8 @@
   </style>
 </head>
 <body>
-  <div id="splash-bg" class="splash-background no-splash"></div>
+  <!-- Default splash: High Noon Locke (change the path if your file name is different) -->
+  <div id="splash-bg" class="splash-background" style="background-image: url('images/splashes/High_Noon_Locke.jpg');"></div>
 
   <header>
     <h1>The Locke Bible</h1>
@@ -440,12 +440,12 @@
     let runeMap = {};
     let currentPatchVersion = '';
 
-    // ---- CUSTOM SPLASH OVERRIDES ----
+    // Custom splash overrides (Fiddlesticks uses new splash)
     const CUSTOM_SPLASHES = {
-      "Fiddlesticks": "images/splashes/Fiddlesticks.jpg"   // new splash image in your repo
+      "Fiddlesticks": "images/splashes/Fiddlesticks.jpg"
     };
 
-    // Abbreviations mapping (unchanged)
+    // Abbreviations mapping
     const ABBREVIATIONS = [
       "Aurelion Sol asol",
       "Bel'Veth belveth bv",
@@ -623,7 +623,6 @@
     function preloadSplashImages(champions) {
       champions.forEach(champ => {
         const img = new Image();
-        // Check for custom splash, otherwise use CDN with cache busting
         img.src = CUSTOM_SPLASHES[champ.id] ||
                   `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${champ.id}_0.jpg?v=${currentPatchVersion}`;
       });
@@ -678,7 +677,8 @@
     function setSplashBackground(championId) {
       const splashBg = document.getElementById('splash-bg');
       if (!championId) {
-        splashBg.style.backgroundImage = '';
+        // Reset to default High Noon Locke
+        splashBg.style.backgroundImage = "url('images/splashes/High_Noon_Locke.jpg')";
         splashBg.classList.add('no-splash');
         return;
       }
