@@ -528,7 +528,7 @@ header h1 {
   }
 }
 
-/* ---------- NEW: matchup split styles ---------- */
+/* ---------- NEW: matchup split styles (now unused, but kept for reference) ---------- */
 .matchup-split {
   display: flex;
   justify-content: space-between;
@@ -536,16 +536,13 @@ header h1 {
   gap: 1.5rem;
   margin-top: 0.5rem;
 }
-
 .matchup-left,
 .matchup-right {
   flex: 1;
 }
-
 .matchup-right {
   text-align: right;
 }
-
 .matchup-video-link {
   color: #f0c27a;
   text-decoration: none;
@@ -553,18 +550,16 @@ header h1 {
   font-size: 0.95rem;
   transition: color 0.2s;
 }
-
 .matchup-video-link:hover {
   color: #ffd966;
 }
-
 .no-video {
   color: #666;
   font-style: italic;
 }
 
-/* Video badge – white pill with black text, white outline */
-.video-badge {
+/* ---------- FIXED: Video badge with higher specificity ---------- */
+.phase-slot .video-badge {
   display: inline-block;
   padding: 0.2rem 1rem;
   border-radius: 20px;
@@ -575,7 +570,7 @@ header h1 {
   text-decoration: none;
   transition: background 0.2s, color 0.2s;
 }
-.video-badge:hover {
+.phase-slot .video-badge:hover {
   background: #000000;
   color: #ffffff;
 }
@@ -583,7 +578,7 @@ header h1 {
 /* Author credit – now appears inline after the heading */
 .video-author-inline {
   font-size: 0.85rem;
-  color: #8b7a62;          /* same colour as before */
+  color: #8b7a62;
   font-style: italic;
   font-weight: normal;
 }
