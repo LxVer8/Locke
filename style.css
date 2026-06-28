@@ -650,10 +650,10 @@ header h1 {
 }
 
 .phase-diff-label {
-  font-size: 0.6rem;
+  font-size: 0.85rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #8b7a62;
+  letter-spacing: 1px;
+  color: #c8aa6e;
   font-weight: bold;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.2rem;   /* keeps a little space above the badge */
 }
