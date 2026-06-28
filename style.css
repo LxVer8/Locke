@@ -527,3 +527,38 @@ header h1 {
     flex-direction: column;
   }
 }
+
+/* ---------- NEW: matchup split styles ---------- */
+.matchup-split {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.matchup-left,
+.matchup-right {
+  flex: 1;
+}
+
+.matchup-right {
+  text-align: right;
+}
+
+.matchup-video-link {
+  color: #f0c27a;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+}
+
+.matchup-video-link:hover {
+  color: #ffd966;
+}
+
+.no-video {
+  color: #666;
+  font-style: italic;
+}

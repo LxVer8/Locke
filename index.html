@@ -18,7 +18,6 @@
       </div>
     </div>
     <div class="header-right">
-      <!-- NEW BUTTON -->
       <button id="creators-btn" class="creators-btn" onclick="showCreators()">Locke Content Creators</button>
     </div>
   </header>
@@ -579,13 +578,32 @@
       html += `<h2>${championName}</h2>`;
 
       if (data) {
+        // ---------- UPDATED: Matchup Difficulty with split layout ----------
+        html += `<div class="info-slot">`;
+        html += `<h3>Matchup Difficulty</h3>`;
+        html += `<div class="matchup-split">`;
+
+        // Left side: difficulty badge
         const diffNum = parseFloat(data.difficulty);
         if (!isNaN(diffNum)) {
           const { bg, text } = getDifficultyColor(diffNum);
-          html += `<div class="info-slot"><h3>Matchup Difficulty</h3><span class="difficulty-badge" style="background-color: ${bg}; color: ${text};">${diffNum} / 10</span></div>`;
+          html += `<div class="matchup-left"><span class="difficulty-badge" style="background-color: ${bg}; color: ${text};">${diffNum} / 10</span></div>`;
         } else {
-          html += `<div class="info-slot"><h3>Matchup Difficulty</h3><span class="difficulty-badge" style="background:#2a2a18; color:#f0c27a;">${data.difficulty || '?'}</span></div>`;
+          html += `<div class="matchup-left"><span class="difficulty-badge" style="background:#2a2a18; color:#f0c27a;">${data.difficulty || '?'}</span></div>`;
         }
+
+        // Right side: video link (if available)
+        html += `<div class="matchup-right">`;
+        if (data.videoUrl) {
+          const videoTitle = data.videoTitle || 'Watch Matchup Video';
+          html += `<a href="${data.videoUrl}" target="_blank" rel="noopener" class="matchup-video-link">${videoTitle}</a>`;
+        } else {
+          html += `<span class="no-video">No video</span>`;
+        }
+        html += `</div>`;
+
+        html += `</div>`; // close matchup-split
+        html += `</div>`; // close info-slot
 
         html += `<div class="info-slot"><h3>General Tip</h3><p>${data.generalTip || ''}</p></div>`;
 
