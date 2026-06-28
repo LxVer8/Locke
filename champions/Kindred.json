@@ -1,34 +1,35 @@
 {
-  "difficulty": 8,
-  "generalTip": "Dodge his Q sweet spots. His sustain is weaker early if you avoid the blade.",
-  "earlyGame": "His Q is strong but cooldowns are long. Trade when his Q is down.",
-  "midGame": "He roams effectively with ult. Ward river and match his roams.",
-  "lateGame": "Falls off against tanks. Peel him off your backline.",
-  "matchupNote": "Build anti-heal early. Fight inside his Q range to make it harder for him to hit the edge.",
+  "difficulty": 0,
+  "generalTip": "No information was written yet. If you want to help, please contact LxVer8 on Discord or join the <a href='https://discord.gg/Hhm93tvCVC'>Locke Mains' Discord Server</a>, or the <a href='https://www.reddit.com/r/Locke_Mains/'>Locke Mains Reddit</a>.",
+  "earlyGame": "?",
+  "midGame": "?",
+  "lateGame": "?",
+  "matchupNote": "?",
 "items": {
   "starter": [
-    "images/items/Dorans_Shield.png",
+    "images/items/Dorans_Ring.png",
     "images/items/Health_Potion.png"
   ],
   "core": [
-    "images/items/Thornmail.png",
-    "images/items/Plated_Steelcaps.png"
+    "images/items/Oblivion_Orb.png",
+    "images/items/Liche_Bane.png",
+    "images/items/Shadowflame.png"
   ],
   "situational": [
-    "images/items/Bramble_Vest.png",
-    "images/items/Randuins_Omen.png"
+    "images/items/Liandrys_Torment.png",
+    "images/items/Rabadons_Deathcap.png"
   ]
 },
   "runes": {
     "primary": {
-      "style": "Precision",
-      "keystone": "Conqueror",
-      "row1": "Triumph",
-      "row2": "Legend: Alacrity",
-      "row3": "Last Stand"
+      "style": "Domination",
+      "keystone": "Electrocute",
+      "row1": "Sudden_Impact",
+      "row2": "Sixth_Sense",
+      "row3": "Ultimate_Hunter"
     },
     "secondary": {
-      "style": "Resolve",
+      "style": "Valor",
       "rune1": "Bone Plating",
       "rune2": "Revitalize"
     },
