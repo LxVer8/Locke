@@ -9,7 +9,7 @@
 <body>
   <header>
     <div class="header-left">
-      <span id="intro-back-btn" class="intro-back-btn" onclick="resetToIntro()" style="display:none;">Back to Intro</span>
+      <span id="intro-back-btn" class="intro-back-btn" onclick="resetToIntro()">Back to Intro</span>
     </div>
     <div class="header-center">
       <h1>The Locke Bible</h1>
@@ -225,7 +225,6 @@
         activeChampionItem.classList.remove('active');
         activeChampionItem = null;
       }
-      introBackBtn.style.display = 'none';
       setSplashBackground(null);
       renderIntro();
     }
