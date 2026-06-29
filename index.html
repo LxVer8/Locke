@@ -591,7 +591,14 @@
     function renderChampionInfo(championId, championName, data) {
       const infoPanel = document.getElementById('info-panel');
       let html = `<div class="champion-detail">`;
+      html += `<div class="champion-title-row">`;
       html += `<h2>${championName}</h2>`;
+      if (data.lastUpdated || data.updatedBy) {
+        const dateStr = data.lastUpdated || '';
+        const authorStr = data.updatedBy ? ` by ${data.updatedBy}` : '';
+        html += `<span class="champion-meta">Updated${authorStr} ${dateStr}</span>`;
+      }
+      html += `</div>`;
 
       if (data) {
         // ---------- Matchup Difficulty (identical style to Summoner Spells & Abilities) ----------
