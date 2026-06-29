@@ -732,3 +732,48 @@ header h1 {
   transform: scale(1.1);
   border-color: #c8aa6e;
 }
+
+/* ---------- CREATORS SPREADSHEET ---------- */
+.spreadsheet-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #ddd6c8;
+  font-size: 0.9rem;
+}
+
+/* Thick border around every cell */
+.spreadsheet-table th,
+.spreadsheet-table td {
+  border: 2px solid #4a3e2c;
+  padding: 0.8rem 1rem;
+  text-align: left;
+  vertical-align: middle;
+}
+
+/* Header cells – even thicker bottom border */
+.spreadsheet-table th {
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.8rem;
+  color: #c8aa6e;
+  background: rgba(200, 170, 110, 0.08);
+  font-weight: 700;
+  border-bottom: 3px solid #c8aa6e;
+}
+
+/* Links inside cells */
+.spreadsheet-table a {
+  color: #c8aa6e;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.spreadsheet-table a:hover {
+  color: #f0c27a;
+  text-decoration: underline;
+}
+
+/* Hover effect on rows */
+.spreadsheet-table tbody tr:hover {
+  background: rgba(200, 170, 110, 0.05);
+}
