@@ -658,3 +658,26 @@ header h1 {
   font-weight: bold;
   margin-bottom: 0.2rem;
 }
+
+/* Champion title row – flex so meta sits opposite the name */
+.champion-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 1px solid #2e2e3a;
+  padding-bottom: 0.3rem;
+  margin-bottom: 1.5rem;
+}
+
+.champion-title-row h2 {
+  margin-bottom: 0;            /* reset the old bottom margin */
+  border-bottom: none;         /* remove the old border (now on the row) */
+  padding-bottom: 0;
+}
+
+.champion-meta {
+  font-size: 0.75rem;
+  color: #6b5e4a;
+  font-style: italic;
+  white-space: nowrap;
+}
