@@ -589,14 +589,6 @@ header h1 {
   margin-left: auto;
 }
 
-.difficulty-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  overflow: hidden;                /* important: clips the extended row */
-}
-
 /* Three compact matchup zones inside the difficulty card */
 .matchup-zones {
   margin-top: 1rem;
@@ -630,20 +622,6 @@ header h1 {
   max-width: 60%;
 }
 
-/* Horizontal row of three phase difficulty columns – no backgrounds, just a top divider */
-.phase-difficulties-row {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: auto;                /* push to bottom */
-  padding-top: 0.8rem;
-  border-top: 1px solid #2e2e3a;
-  width: calc(100% + 2rem);        /* 1rem left + 1rem right from phase-slot padding */
-  margin-left: -1rem;
-  margin-right: -1rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-
 .phase-diff-col {
   flex: 1;
   display: flex;
@@ -665,4 +643,34 @@ header h1 {
 
 .difficulty-phases-row {
   align-items: stretch;
+}
+
+.difficulty-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  overflow: hidden;
+}
+
+.difficulty-top {
+  text-align: center;
+}
+
+.difficulty-divider {
+  width: calc(100% + 2rem);
+  margin-left: -1rem;
+  margin-right: -1rem;
+  border-top: 1px solid #2e2e3a;
+  margin-top: auto;
+  margin-bottom: auto;
+  height: 0;
+}
+
+.phase-difficulties-row {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+  padding-top: 0.8rem;    /* space between line and columns */
+  padding-bottom: 0;      /* keep bottom flush */
 }
