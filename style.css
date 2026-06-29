@@ -733,7 +733,17 @@ header h1 {
   border-color: #c8aa6e;
 }
 
-/* ---------- CREATORS SPREADSHEET ---------- */
+/* ---------- CREATORS FULL‑WIDTH TABLE ---------- */
+.full-width-table-wrapper {
+  background: rgba(27, 27, 42, 0.7);
+  border: 1px solid #2e2e3a;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 1.2rem;
+  /* No horizontal padding – the table will stretch edge‑to‑edge */
+  padding: 0;
+}
+
 .spreadsheet-table {
   width: 100%;
   border-collapse: collapse;
@@ -741,7 +751,7 @@ header h1 {
   font-size: 0.9rem;
 }
 
-/* Thick border around every cell */
+/* Thick borders around every cell */
 .spreadsheet-table th,
 .spreadsheet-table td {
   border: 2px solid #4a3e2c;
@@ -750,7 +760,7 @@ header h1 {
   vertical-align: middle;
 }
 
-/* Header cells – even thicker bottom border */
+/* Header row */
 .spreadsheet-table th {
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -761,19 +771,16 @@ header h1 {
   border-bottom: 3px solid #c8aa6e;
 }
 
-/* Links inside cells */
 .spreadsheet-table a {
   color: #c8aa6e;
   text-decoration: none;
   font-weight: 600;
 }
-
 .spreadsheet-table a:hover {
   color: #f0c27a;
   text-decoration: underline;
 }
 
-/* Hover effect on rows */
 .spreadsheet-table tbody tr:hover {
   background: rgba(200, 170, 110, 0.05);
 }
