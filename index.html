@@ -295,7 +295,7 @@
         });
     }
 
-    // ---------- CACHED CHAMPIONS (for tierlist) ----------
+// ---------- CACHED CHAMPIONS (for tierlist) ----------
 let tierlistChampions = null;
 
 function getTierColor(tier) {
@@ -322,44 +322,64 @@ async function showTierlist() {
   setSplashBackground(null);
 
   const infoPanel = document.getElementById('info-panel');
-  infoPanel.innerHTML = '<p style="text-align:center;margin-top:2rem;">Loading tierlist...</p>';
+  infoPanel.innerHTML = '<p style="text-align:center;margin-top:2rem;">Loading tierlist…</p>';
 
   try {
-    // Fetch champions only if not already cached
+    // 1. Fetch the champion list from DataDragon (if not already cached)
     if (!tierlistChampions) {
       const versionsRes = await fetch('https://ddragon.leagueoflegends.com/api/versions.json');
       const versions = await versionsRes.json();
       const latestVersion = versions[0];
-
-      const champsRes = await fetch(
-        `https://ddragon.leagueoflegends.com/cdn/${latestVersion}/data/en_US/champion.json`
-      );
+      const champsRes = await fetch(`https://ddragon.leagueoflegends.com/cdn/${latestVersion}/data/en_US/champion.json`);
       const champsData = await champsRes.json();
       tierlistChampions = Object.values(champsData.data);
     }
 
-    // Build HTML
-    let html = '<div class="champion-detail"><h2>Locke Tierlist</h2>';
+    // 2. Fetch difficulty for every champion
+    const difficultyMap = {};  // championId → rounded difficulty (1‑10)
 
-    // Tier rows (10 → 1)
+    const fetchPromises = tierlistChampions.map(champ =>
+      fetch(`champions/${champ.id}.json`)
+        .then(res => res.json())
+        .then(data => {
+          const diff = parseFloat(data.difficulty);
+          if (!isNaN(diff)) {
+            const rounded = Math.round(diff);
+            const tier = Math.min(10, Math.max(1, rounded));
+            difficultyMap[champ.id] = tier;
+          }
+        })
+        .catch(() => {
+          // no JSON file, no difficulty – skip
+        })
+    );
+
+    await Promise.allSettled(fetchPromises);
+
+    // 3. Build HTML
+    const iconBase = `https://ddragon.leagueoflegends.com/cdn/${currentPatchVersion}/img/champion`;
+
+    let html = '<div class="champion-detail"><h2>Difficulty Tierlist</h2>';
+
     for (let tier = 10; tier >= 1; tier--) {
       const { bg, text } = getTierColor(tier);
-      html += `
-        <div class="tier-row">
-          <div class="tier-label" style="background-color:${bg};color:${text};">Tier ${tier}</div>
-          <div class="tier-content" id="tier-${tier}"></div>
-        </div>
-      `;
+      html += `<div class="tier-row">`;
+      html += `<div class="tier-label" style="background-color:${bg};color:${text};">Tier ${tier}</div>`;
+      html += `<div class="tier-content" id="tier-${tier}">`;
+
+      // Find champions of this tier
+      tierlistChampions.forEach(champ => {
+        if (difficultyMap[champ.id] === tier) {
+          const imgUrl = `${iconBase}/${champ.image.full}`;
+          html += `<img src="${imgUrl}" alt="${champ.name}" class="tierlist-champion-icon" loading="lazy" />`;
+        }
+      });
+
+      html += `</div></div>`;
     }
 
-    // Champion pool (all champions)
-    html += '<div class="champion-pool-title">All Champions (drag to a tier)</div>';
-    html += '<div class="champion-pool" id="champion-pool">';
-    tierlistChampions.forEach(champ => {
-      const iconUrl = `https://ddragon.leagueoflegends.com/cdn/${currentPatchVersion || 'latest'}/img/champion/${champ.image.full}`;
-      html += `<img src="${iconUrl}" alt="${champ.name}" class="tierlist-champion-icon" draggable="true" data-champion-id="${champ.id}" />`;
-    });
-    html += '</div>';
+    // Optional: champion pool (empty or removed)
+    // html += `<div class="champion-pool-title">All Champions</div><div class="champion-pool"></div>`;
 
     html += '</div>'; // close champion-detail
     infoPanel.innerHTML = html;

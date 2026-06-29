@@ -1,5 +1,15 @@
 {
-  "difficulty": 0,
+  "lastUpdated": "2026-06-28",
+  "updatedBy": "Your Mother",
+  "difficulty": 7,
+  "phaseDifficulties": [
+    { "label": "EARLY GAME", "value": 2 },
+    { "label": "MID GAME", "value": 6 },
+    { "label": "LATE GAME", "value": 9 }
+  ],
+  "videoTitle": "this is the title for the aatrox video",
+  "videoUrl": "https://www.youtube.com/watch?v=1N5SDXSVZHE",
+  "videoAuthor": "Your Mother",
   "generalTip": "No information was written yet. If you want to help, please contact LxVer8 on Discord or join the <a href='https://discord.gg/Hhm93tvCVC'>Locke Mains' Discord Server</a>, or the <a href='https://www.reddit.com/r/Locke_Mains/'>Locke Mains Reddit</a>.",
   "earlyGame": "?",
   "midGame": "?",
