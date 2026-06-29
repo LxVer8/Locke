@@ -596,40 +596,45 @@ header h1 {
 
 /* Left difficulty card – full height, flex column, centering halves */
 .difficulty-card {
+  height: 210px;               /* exactly 210px */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   overflow: hidden;
+  padding-top: 0;              /* remove top padding so 105px is measured from the card's edge */
+  padding-bottom: 0;
 }
 
-/* Top half: Difficulty heading and badge */
+/* Top half – exactly 105px, centered content */
 .difficulty-top {
-  flex: 1;
+  height: 105px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;   /* vertically centered in top half */
+  justify-content: center;
   text-align: center;
+  width: 100%;
 }
 
-/* Centered divider line (edge-to-edge) */
+/* Divider line – sits exactly at 105px from top */
 .difficulty-divider {
   width: calc(100% + 2rem);
   margin-left: -1rem;
   margin-right: -1rem;
   border-top: 1px solid #2e2e3a;
   height: 0;
+  flex-shrink: 0;
 }
 
-/* Bottom half: phase columns */
+/* Bottom half – fills the remaining 105px */
 .phase-difficulties-row {
   flex: 1;
   display: flex;
   flex-direction: row;
   gap: 0.5rem;
   width: 100%;
-  align-items: center;       /* vertically center columns in bottom half */
+  align-items: center;         /* center columns vertically in bottom half */
   justify-content: center;
   padding-top: 0;
   padding-bottom: 0;
