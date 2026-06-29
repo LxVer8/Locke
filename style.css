@@ -592,8 +592,8 @@ header h1 {
 .difficulty-card {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  align-items: center;          /* horizontal centering */
+  justify-content: flex-start;  /* content starts at top */
 }
 
 /* Three compact matchup zones inside the difficulty card */
@@ -633,9 +633,9 @@ header h1 {
 .phase-difficulties-row {
   display: flex;
   gap: 0.5rem;
-  margin-top: 0.8rem;
+  margin-top: auto;             /* pushes to bottom when card is stretched */
   padding-top: 0.8rem;
-  border-top: 1px solid #2e2e3a;   /* thin divider line */
+  border-top: 1px solid #2e2e3a;
   width: 100%;
 }
 
@@ -656,4 +656,8 @@ header h1 {
   color: #c8aa6e;
   font-weight: bold;
   margin-bottom: 0.2rem;   /* keeps a little space above the badge */
+}
+
+.difficulty-phases-row {
+  align-items: stretch;
 }
