@@ -628,6 +628,31 @@
         }
         html += `</div>`; // close difficulty-card
 
+        // Right card – Video Guide (right-aligned)
+        html += `<div class="phase-slot video-card"><h4>Video Guide`;
+        if (data.videoAuthor) {
+          html += ` <span class="video-author-inline">by ${data.videoAuthor}</span>`;
+        }
+        html += `</h4>`;
+        if (data.videoUrl) {
+          let thumbnailUrl = data.videoThumbnail || null;
+          if (!thumbnailUrl) {
+            thumbnailUrl = getYouTubeThumbnail(data.videoUrl);
+          }
+          if (thumbnailUrl) {
+            html += `<a href="${data.videoUrl}" target="_blank" rel="noopener" class="video-thumbnail-link">`;
+            html += `<img src="${thumbnailUrl}" alt="${data.videoTitle || 'Matchup Video'}" class="video-thumbnail-img" loading="lazy">`;
+            html += `</a>`;
+          } else {
+            html += `<a href="${data.videoUrl}" target="_blank" rel="noopener" class="video-badge" title="${data.videoUrl}">${data.videoTitle || 'Watch Matchup Video'}</a>`;
+          }
+        } else {
+          html += `<span class="no-video">No video</span>`;
+        }
+        html += `</div>`;
+
+        html += `</div></div>`; // close phases-row and info-slot
+
         html += `<div class="info-slot"><h3>General Tip</h3><p>${data.generalTip || ''}</p></div>`;
 
         html += `<div class="info-slot"><h3>Game Phases</h3><div class="phases-row">`;
