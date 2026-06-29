@@ -21,6 +21,23 @@
   <header>
     <div class="header-left">
       <span id="intro-back-btn" class="intro-back-btn" onclick="resetToIntro()">Back to Intro</span>
+      <div class="role-filters">
+        <button class="role-btn" data-role="Top" title="Top">
+          <img src="images/roles/top.png" alt="Top">
+        </button>
+        <button class="role-btn" data-role="Jungle" title="Jungle">
+          <img src="images/roles/jungle.png" alt="Jungle">
+        </button>
+        <button class="role-btn" data-role="Mid" title="Middle">
+          <img src="images/roles/mid.png" alt="Mid">
+        </button>
+        <button class="role-btn" data-role="Bot" title="Bottom">
+          <img src="images/roles/bot.png" alt="Bot">
+        </button>
+        <button class="role-btn" data-role="Support" title="Support">
+          <img src="images/roles/support.png" alt="Support">
+        </button>
+      </div>
     </div>
     <div class="header-center">
       <h1>The Locke Bible</h1>
@@ -28,10 +45,10 @@
         <input type="text" id="search-input" placeholder="Search champion..." autocomplete="off" />
       </div>
     </div>
-      <div class="header-right">
-        <button id="creators-btn" class="creators-btn" onclick="showCreatorsPage()">Locke Content Creators</button>
-        <button id="tierlist-btn" class="creators-btn" onclick="showTierlist()">Difficulty Tierlist</button>
-      </div>
+    <div class="header-right">
+      <button id="creators-btn" class="creators-btn" onclick="showCreatorsPage()">Content Creators</button>
+      <button id="tierlist-btn" class="creators-btn" onclick="showTierlist()">Difficulty Tierlist</button>
+    </div>
   </header>
 
   <div class="main-layout">
@@ -118,6 +135,87 @@
         ]
       }
     ];
+
+    // ---------- ROLE FILTERING ----------
+    let selectedRoles = new Set();               // currently toggled-on roles
+    let championRoles = {};                      // will be loaded from championRoles.json
+
+    // Load the mapping
+    async function loadChampionRoles() {
+      try {
+        const res = await fetch('championRoles.json');
+        if (res.ok) {
+          championRoles = await res.json();
+        } else {
+          console.warn('championRoles.json not found – filtering disabled');
+        }
+      } catch (e) {
+        console.warn('Failed to load championRoles.json:', e);
+      }
+    }
+
+    // Update the champion list based on search + selected roles
+    function applyFilters() {
+      const query = document.getElementById('search-input').value.toLowerCase().trim();
+
+      allChampionItems.forEach(item => {
+        const champId = item.dataset.championId;
+        const champName = item.dataset.championName;
+        const terms = championSearchTerms[champId] || [champName];
+
+        // Search match
+        const matchesSearch = query === '' || terms.some(term => term.includes(query));
+
+        // Role match: if no roles selected → show all; otherwise champion must have at least one of the selected roles
+        let matchesRole = true;
+        if (selectedRoles.size > 0 && championRoles[champId]) {
+          matchesRole = championRoles[champId].some(role => selectedRoles.has(role));
+        } else if (selectedRoles.size > 0) {
+          matchesRole = false; // champion has no role data, hide if filter is active
+        }
+
+        if (matchesSearch && matchesRole) {
+          item.style.display = 'flex';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+
+      // Show/hide "no results" message
+      const visible = allChampionItems.some(item => item.style.display !== 'none');
+      let noResultsEl = document.querySelector('.no-results');
+      if (!visible && !noResultsEl) {
+        noResultsEl = document.createElement('p');
+        noResultsEl.className = 'no-results';
+        noResultsEl.textContent = 'No champions match your filters.';
+        document.getElementById('champion-list').appendChild(noResultsEl);
+      } else if (visible && noResultsEl) {
+        noResultsEl.remove();
+      }
+    }
+
+    // Toggle a role on/off and refresh the list
+    function toggleRole(role) {
+      if (selectedRoles.has(role)) {
+        selectedRoles.delete(role);
+      } else {
+        selectedRoles.add(role);
+      }
+      updateRoleButtonStates();
+      applyFilters();
+    }
+
+    // Visual active state on the buttons
+    function updateRoleButtonStates() {
+      document.querySelectorAll('.role-btn').forEach(btn => {
+        const role = btn.dataset.role;
+        if (selectedRoles.has(role)) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+    }
 
     // ---------- CUSTOM TOOLTIP LOGIC ----------
     const tooltip = document.getElementById('custom-tooltip');
@@ -218,122 +316,110 @@
       renderIntro();
     }
 
-function showCreatorsPage() {
-  if (activeChampionItem) {
-    activeChampionItem.classList.remove('active');
-    activeChampionItem = null;
-  }
-  introBackBtn.style.display = 'inline';
-  setSplashBackground(null);
+    function showCreatorsPage() {
+      if (activeChampionItem) {
+        activeChampionItem.classList.remove('active');
+        activeChampionItem = null;
+      }
+      introBackBtn.style.display = 'inline';
+      setSplashBackground(null);
 
-  const infoPanel = document.getElementById('info-panel');
-  infoPanel.innerHTML = '<p style="text-align:center;margin-top:2rem;">Loading creators…</p>';
+      const infoPanel = document.getElementById('info-panel');
+      infoPanel.innerHTML = '<p style="text-align:center;margin-top:2rem;">Loading creators…</p>';
 
-  fetch('creators.html')
-    .then(response => {
-      if (!response.ok) throw new Error('creators.html not found');
-      return response.text();
-    })
-    .then(html => {
-      infoPanel.innerHTML = html;
-    })
-    .catch(err => {
-      console.error(err);
-      infoPanel.innerHTML = '<p style="text-align:center;margin-top:2rem;color:red;">Creators page unavailable right now.</p>';
-    });
-}
-
-// ---------- CACHED CHAMPIONS (for tierlist) ----------
-let tierlistChampions = null;
-
-function getTierColor(tier) {
-  // Use the same color scheme as difficulty badges (1‑10)
-  if (tier >= 10) return { bg: '#cc0000', text: 'black' };
-  if (tier >= 9)  return { bg: '#ea4335', text: 'black' };
-  if (tier >= 8)  return { bg: '#ea6435', text: 'black' };
-  if (tier >= 7)  return { bg: '#e69138', text: 'black' };
-  if (tier >= 6)  return { bg: '#f1c232', text: 'black' };
-  if (tier >= 5)  return { bg: '#ffd966', text: 'black' };
-  if (tier >= 4)  return { bg: '#d7e455', text: 'black' };
-  if (tier >= 3)  return { bg: '#90d542', text: 'black' };
-  if (tier >= 2)  return { bg: '#4da029', text: 'black' };
-  return              { bg: '#337432', text: 'black' };
-}
-
-async function showTierlist() {
-  // Deselect any active champion
-  if (activeChampionItem) {
-    activeChampionItem.classList.remove('active');
-    activeChampionItem = null;
-  }
-  introBackBtn.style.display = 'inline';
-  setSplashBackground(null);
-
-  const infoPanel = document.getElementById('info-panel');
-  infoPanel.innerHTML = '<p style="text-align:center;margin-top:2rem;">Loading tierlist…</p>';
-
-  try {
-    // 1. Fetch the champion list from DataDragon (if not already cached)
-    if (!tierlistChampions) {
-      const versionsRes = await fetch('https://ddragon.leagueoflegends.com/api/versions.json');
-      const versions = await versionsRes.json();
-      const latestVersion = versions[0];
-      const champsRes = await fetch(`https://ddragon.leagueoflegends.com/cdn/${latestVersion}/data/en_US/champion.json`);
-      const champsData = await champsRes.json();
-      tierlistChampions = Object.values(champsData.data);
+      fetch('creators.html')
+        .then(response => {
+          if (!response.ok) throw new Error('creators.html not found');
+          return response.text();
+        })
+        .then(html => {
+          infoPanel.innerHTML = html;
+        })
+        .catch(err => {
+          console.error(err);
+          infoPanel.innerHTML = '<p style="text-align:center;margin-top:2rem;color:red;">Creators page unavailable right now.</p>';
+        });
     }
 
-    // 2. Fetch difficulty for every champion
-    const difficultyMap = {};  // championId → rounded difficulty (1‑10)
+    // ---------- CACHED CHAMPIONS (for tierlist) ----------
+    let tierlistChampions = null;
 
-    const fetchPromises = tierlistChampions.map(champ =>
-      fetch(`champions/${champ.id}.json`)
-        .then(res => res.json())
-        .then(data => {
-          const diff = parseFloat(data.difficulty);
-          if (!isNaN(diff)) {
-            const rounded = Math.round(diff);
-            const tier = Math.min(10, Math.max(1, rounded));
-            difficultyMap[champ.id] = tier;
-          }
-        })
-        .catch(() => {
-          // no JSON file, no difficulty – skip
-        })
-    );
+    function getTierColor(tier) {
+      if (tier >= 10) return { bg: '#cc0000', text: 'black' };
+      if (tier >= 9)  return { bg: '#ea4335', text: 'black' };
+      if (tier >= 8)  return { bg: '#ea6435', text: 'black' };
+      if (tier >= 7)  return { bg: '#e69138', text: 'black' };
+      if (tier >= 6)  return { bg: '#f1c232', text: 'black' };
+      if (tier >= 5)  return { bg: '#ffd966', text: 'black' };
+      if (tier >= 4)  return { bg: '#d7e455', text: 'black' };
+      if (tier >= 3)  return { bg: '#90d542', text: 'black' };
+      if (tier >= 2)  return { bg: '#4da029', text: 'black' };
+      return              { bg: '#337432', text: 'black' };
+    }
 
-    await Promise.allSettled(fetchPromises);
+    async function showTierlist() {
+      if (activeChampionItem) {
+        activeChampionItem.classList.remove('active');
+        activeChampionItem = null;
+      }
+      introBackBtn.style.display = 'inline';
+      setSplashBackground(null);
 
-    // 3. Build HTML
-    const iconBase = `https://ddragon.leagueoflegends.com/cdn/${currentPatchVersion}/img/champion`;
+      const infoPanel = document.getElementById('info-panel');
+      infoPanel.innerHTML = '<p style="text-align:center;margin-top:2rem;">Loading tierlist…</p>';
 
-    let html = '<div class="champion-detail"><h2>Difficulty Tierlist</h2>';
-
-    for (let tier = 10; tier >= 1; tier--) {
-      const { bg, text } = getTierColor(tier);
-      html += `<div class="tier-row">`;
-      html += `<div class="tier-label" style="background-color:${bg};color:${text};">Tier ${tier}</div>`;
-      html += `<div class="tier-content" id="tier-${tier}">`;
-
-      // Find champions of this tier
-      tierlistChampions.forEach(champ => {
-        if (difficultyMap[champ.id] === tier) {
-          const imgUrl = `${iconBase}/${champ.image.full}`;
-          html += `<img src="${imgUrl}" alt="${champ.name}" class="tierlist-champion-icon" loading="lazy" />`;
+      try {
+        if (!tierlistChampions) {
+          const versionsRes = await fetch('https://ddragon.leagueoflegends.com/api/versions.json');
+          const versions = await versionsRes.json();
+          const latestVersion = versions[0];
+          const champsRes = await fetch(`https://ddragon.leagueoflegends.com/cdn/${latestVersion}/data/en_US/champion.json`);
+          const champsData = await champsRes.json();
+          tierlistChampions = Object.values(champsData.data);
         }
-      });
 
-      html += `</div></div>`;
+        const difficultyMap = {};
+        const fetchPromises = tierlistChampions.map(champ =>
+          fetch(`champions/${champ.id}.json`)
+            .then(res => res.json())
+            .then(data => {
+              const diff = parseFloat(data.difficulty);
+              if (!isNaN(diff)) {
+                const rounded = Math.round(diff);
+                const tier = Math.min(10, Math.max(1, rounded));
+                difficultyMap[champ.id] = tier;
+              }
+            })
+            .catch(() => {})
+        );
+        await Promise.allSettled(fetchPromises);
+
+        const iconBase = `https://ddragon.leagueoflegends.com/cdn/${currentPatchVersion}/img/champion`;
+        let html = '<div class="champion-detail"><h2>Difficulty Tierlist</h2>';
+
+        for (let tier = 10; tier >= 1; tier--) {
+          const { bg, text } = getTierColor(tier);
+          html += `<div class="tier-row">`;
+          html += `<div class="tier-label" style="background-color:${bg};color:${text};">Tier ${tier}</div>`;
+          html += `<div class="tier-content" id="tier-${tier}">`;
+
+          tierlistChampions.forEach(champ => {
+            if (difficultyMap[champ.id] === tier) {
+              const imgUrl = `${iconBase}/${champ.image.full}`;
+              html += `<img src="${imgUrl}" alt="${champ.name}" class="tierlist-champion-icon" loading="lazy" />`;
+            }
+          });
+
+          html += `</div></div>`;
+        }
+
+        html += '</div>';
+        infoPanel.innerHTML = html;
+      } catch (error) {
+        console.error(error);
+        infoPanel.innerHTML = '<p style="color:red;text-align:center;margin-top:2rem;">Could not load tierlist.</p>';
+      }
     }
-
-    html += '</div>'; // close champion-detail
-    infoPanel.innerHTML = html;
-
-  } catch (error) {
-    console.error(error);
-    infoPanel.innerHTML = '<p style="color:red;text-align:center;margin-top:2rem;">Could not load tierlist.</p>';
-  }
-}
 
     // ---------- LOAD RUNE DEFINITIONS ----------
     (async function loadRuneData() {
@@ -436,6 +522,15 @@ async function showTierlist() {
         preloadSplashImages(champions);
         setupSearch();
         loadIntroData();
+
+        // ----- Role filtering initialisation -----
+        await loadChampionRoles();
+        document.querySelectorAll('.role-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            toggleRole(btn.dataset.role);
+          });
+        });
+        applyFilters();  // initial filter run (show all if no roles selected)
       } catch (error) {
         championList.innerHTML = '<p style="color:red;padding:1rem;">Could not load champions.</p>';
         console.error(error);
@@ -452,35 +547,7 @@ async function showTierlist() {
 
     function setupSearch() {
       const searchInput = document.getElementById('search-input');
-      const championList = document.getElementById('champion-list');
-
-      searchInput.addEventListener('input', () => {
-        const query = searchInput.value.toLowerCase().trim();
-        let visibleCount = 0;
-
-        allChampionItems.forEach(item => {
-          const terms = championSearchTerms[item.dataset.championId] || [item.dataset.championName];
-          const matches = query === '' || terms.some(term => term.includes(query));
-          if (matches) {
-            item.style.display = 'flex';
-            visibleCount++;
-          } else {
-            item.style.display = 'none';
-          }
-        });
-
-        let noResultsEl = document.querySelector('.no-results');
-        if (visibleCount === 0) {
-          if (!noResultsEl) {
-            noResultsEl = document.createElement('p');
-            noResultsEl.className = 'no-results';
-            noResultsEl.textContent = 'No champions found.';
-            championList.appendChild(noResultsEl);
-          }
-        } else {
-          if (noResultsEl) noResultsEl.remove();
-        }
-      });
+      searchInput.addEventListener('input', applyFilters);
     }
 
     function getDifficultyColor(value) {
@@ -507,16 +574,16 @@ async function showTierlist() {
       splashBg.style.backgroundImage = `url('${splashUrl}')`;
     }
 
-function getAbilityKeyFromUrl(url) {
-  try {
-    const filename = url.split('/').pop().replace(/\.[^.]+$/, ''); // no extension
-    const lastChar = filename.slice(-1).toUpperCase();
-    if (['Q','W','E','R'].includes(lastChar)) {
-      return lastChar;
+    function getAbilityKeyFromUrl(url) {
+      try {
+        const filename = url.split('/').pop().replace(/\.[^.]+$/, '');
+        const lastChar = filename.slice(-1).toUpperCase();
+        if (['Q','W','E','R'].includes(lastChar)) {
+          return lastChar;
+        }
+      } catch (e) {}
+      return null;
     }
-  } catch (e) {}
-  return null;
-}
 
     function getYouTubeThumbnail(url) {
       try {
@@ -654,10 +721,8 @@ function getAbilityKeyFromUrl(url) {
       html += `</div>`;
 
       if (data) {
-        // ---------- Matchup Difficulty (identical style to Summoner Spells & Abilities) ----------
         html += `<div class="info-slot"><h3>Matchup Difficulty</h3><div class="phases-row difficulty-phases-row">`;
 
-        // Left card – Difficulty + divider + phase columns
         html += `<div class="phase-slot difficulty-card">`;
         html += `<div class="difficulty-top">`;
         html += `<h4>Difficulty</h4>`;
@@ -668,12 +733,10 @@ function getAbilityKeyFromUrl(url) {
         } else {
           html += `<span class="difficulty-badge" style="background:#2a2a18; color:#f0c27a;">${data.difficulty || '?'}</span>`;
         }
-        html += `</div>`; // close difficulty-top
+        html += `</div>`;
 
-        // Centered divider line
         html += `<div class="difficulty-divider"></div>`;
 
-        // Phase columns
         if (data.phaseDifficulties && Array.isArray(data.phaseDifficulties) && data.phaseDifficulties.length === 3) {
           html += `<div class="phase-difficulties-row">`;
           data.phaseDifficulties.forEach(phase => {
@@ -686,9 +749,8 @@ function getAbilityKeyFromUrl(url) {
           });
           html += `</div>`;
         }
-        html += `</div>`; // close difficulty-card
+        html += `</div>`;
 
-        // Right card – Video Guide (right-aligned)
         html += `<div class="phase-slot video-card"><h4>Video Guide`;
         if (data.videoAuthor) {
           html += ` <span class="video-author-inline">by ${data.videoAuthor}</span>`;
@@ -711,7 +773,7 @@ function getAbilityKeyFromUrl(url) {
         }
         html += `</div>`;
 
-        html += `</div></div>`; // close phases-row and info-slot
+        html += `</div></div>`;
 
         html += `<div class="info-slot"><h3>General Tip</h3><p>${data.generalTip || ''}</p></div>`;
 
