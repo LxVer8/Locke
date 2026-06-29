@@ -589,62 +589,12 @@ header h1 {
   margin-left: auto;
 }
 
-/* Three compact matchup zones inside the difficulty card */
-.matchup-zones {
-  margin-top: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.matchup-zone {
-  background: rgba(0,0,0,0.2);
-  border: 1px solid #2e2e3a;
-  border-radius: 8px;
-  padding: 0.4rem 0.6rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-}
-
-.matchup-zone-label {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #8b7a62;
-  font-weight: bold;
-}
-
-.matchup-zone-text {
-  font-size: 0.75rem;
-  color: #ddd6c8;
-  text-align: right;
-  max-width: 60%;
-}
-
-.phase-diff-col {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 0.2rem 0;
-}
-
-.phase-diff-label {
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: #c8aa6e;
-  font-weight: bold;
-  margin-bottom: 0.2rem;   /* keeps a little space above the badge */
-}
-
+/* Difficulty row alignment */
 .difficulty-phases-row {
   align-items: stretch;
 }
 
+/* Left difficulty card – full height, flex column, centering halves */
 .difficulty-card {
   display: flex;
   flex-direction: column;
@@ -653,24 +603,53 @@ header h1 {
   overflow: hidden;
 }
 
+/* Top half: Difficulty heading and badge */
 .difficulty-top {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;   /* vertically centered in top half */
   text-align: center;
 }
 
+/* Centered divider line (edge-to-edge) */
 .difficulty-divider {
   width: calc(100% + 2rem);
   margin-left: -1rem;
   margin-right: -1rem;
   border-top: 1px solid #2e2e3a;
-  margin-top: auto;
-  margin-bottom: auto;
   height: 0;
 }
 
+/* Bottom half: phase columns */
 .phase-difficulties-row {
+  flex: 1;
   display: flex;
+  flex-direction: row;
   gap: 0.5rem;
   width: 100%;
-  padding-top: 0.8rem;    /* space between line and columns */
-  padding-bottom: 0;      /* keep bottom flush */
+  align-items: center;       /* vertically center columns in bottom half */
+  justify-content: center;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* Each phase column */
+.phase-diff-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Phase labels (EARLY GAME, MID GAME, LATE GAME) */
+.phase-diff-label {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #c8aa6e;
+  font-weight: bold;
+  margin-bottom: 0.2rem;
 }
