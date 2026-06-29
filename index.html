@@ -466,6 +466,17 @@
       splashBg.style.backgroundImage = `url('${splashUrl}')`;
     }
 
+function getAbilityKeyFromUrl(url) {
+  try {
+    const filename = url.split('/').pop().replace(/\.[^.]+$/, ''); // no extension
+    const lastChar = filename.slice(-1).toUpperCase();
+    if (['Q','W','E','R'].includes(lastChar)) {
+      return lastChar;
+    }
+  } catch (e) {}
+  return null;
+}
+
     function getYouTubeThumbnail(url) {
       try {
         const urlObj = new URL(url);
@@ -689,9 +700,9 @@
           if (hasAbilities) {
             html += `<div class="items-row">`;
             data.abilityMaxOrder.forEach((url, idx) => {
-              const orderNumber = idx + 1;
-              html += `<span class="ability-icon-wrap" data-order="${orderNumber}">`;
-              html += `<img src="${url}" alt="Ability ${orderNumber}" class="item-icon" data-tooltip="${itemCleanName(url)}" loading="lazy" />`;
+              const abilityKey = getAbilityKeyFromUrl(url) || (idx + 1);
+              html += `<span class="ability-icon-wrap" data-order="${abilityKey}">`;
+              html += `<img src="${url}" alt="Ability ${abilityKey}" class="item-icon" data-tooltip="${itemCleanName(url)}" loading="lazy" />`;
               html += `</span>`;
             });
             html += `</div>`;
