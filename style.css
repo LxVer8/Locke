@@ -81,10 +81,13 @@ header {
 }
 
 .header-right {
-  display: flex;
-  gap: 1rem;
+  flex: 0 0 auto;
   text-align: right;
   min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.3rem;
 }
 
 .intro-back-btn {
