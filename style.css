@@ -785,7 +785,7 @@ header h1 {
   background: rgba(200, 170, 110, 0.05);
 }
 
-/* Role filter container */
+/* ---------- ROLE FILTER BUTTONS ---------- */
 .role-filters {
   display: flex;
   gap: 6px;
@@ -825,43 +825,4 @@ header h1 {
 
 .role-btn.active img {
   opacity: 1;
-}
-
-/* Fallback if no images are loaded – show role abbreviation */
-.role-btn::after {
-  content: attr(data-role);
-  position: absolute;
-  font-size: 0.7rem;
-  color: #c8aa6e;
-  font-weight: bold;
-  opacity: 0;
-}
-
-.role-btn img[src=""],
-.role-btn img:not([src]),
-.role-btn img[src*="missing"] {
-  display: none;
-}
-/* When image is missing, show the text */
-.role-btn img:not([src]) {
-  display: none;
-}
-.role-btn img[src=""] {
-  display: none;
-}
-/* Simple approach: always show text as a fallback layer behind the image */
-.role-btn {
-  position: relative;
-}
-.role-btn::before {
-  content: attr(data-role);
-  font-size: 0.65rem;
-  font-weight: bold;
-  color: #c8aa6e;
-  opacity: 0.5;
-  position: absolute;
-}
-.role-btn img {
-  position: relative;
-  z-index: 1;
 }
