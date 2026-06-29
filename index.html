@@ -20,7 +20,7 @@
     </div>
       <div class="header-right">
         <button id="creators-btn" class="creators-btn" onclick="showCreators()">Locke Content Creators</button>
-        <button id="tierlist-btn" class="creators-btn" onclick="location.href='tierlist.html'">Tierlist</button>
+        <button id="tierlist-btn" class="creators-btn" onclick="showTierlist()">Tierlist</button>
       </div>
   </header>
 
@@ -294,6 +294,81 @@
           infoPanel.innerHTML = '<p style="text-align:center;margin-top:2rem;color:red;">Leaderboard data unavailable right now.</p>';
         });
     }
+
+    // ---------- CACHED CHAMPIONS (for tierlist) ----------
+let tierlistChampions = null;
+
+function getTierColor(tier) {
+  // Use the same color scheme as difficulty badges (1‑10)
+  if (tier >= 10) return { bg: '#cc0000', text: 'black' };
+  if (tier >= 9)  return { bg: '#ea4335', text: 'black' };
+  if (tier >= 8)  return { bg: '#ea6435', text: 'black' };
+  if (tier >= 7)  return { bg: '#e69138', text: 'black' };
+  if (tier >= 6)  return { bg: '#f1c232', text: 'black' };
+  if (tier >= 5)  return { bg: '#ffd966', text: 'black' };
+  if (tier >= 4)  return { bg: '#d7e455', text: 'black' };
+  if (tier >= 3)  return { bg: '#90d542', text: 'black' };
+  if (tier >= 2)  return { bg: '#4da029', text: 'black' };
+  return              { bg: '#337432', text: 'black' };
+}
+
+async function showTierlist() {
+  // Deselect any active champion
+  if (activeChampionItem) {
+    activeChampionItem.classList.remove('active');
+    activeChampionItem = null;
+  }
+  introBackBtn.style.display = 'inline';
+  setSplashBackground(null);
+
+  const infoPanel = document.getElementById('info-panel');
+  infoPanel.innerHTML = '<p style="text-align:center;margin-top:2rem;">Loading tierlist...</p>';
+
+  try {
+    // Fetch champions only if not already cached
+    if (!tierlistChampions) {
+      const versionsRes = await fetch('https://ddragon.leagueoflegends.com/api/versions.json');
+      const versions = await versionsRes.json();
+      const latestVersion = versions[0];
+
+      const champsRes = await fetch(
+        `https://ddragon.leagueoflegends.com/cdn/${latestVersion}/data/en_US/champion.json`
+      );
+      const champsData = await champsRes.json();
+      tierlistChampions = Object.values(champsData.data);
+    }
+
+    // Build HTML
+    let html = '<div class="champion-detail"><h2>Locke Tierlist</h2>';
+
+    // Tier rows (10 → 1)
+    for (let tier = 10; tier >= 1; tier--) {
+      const { bg, text } = getTierColor(tier);
+      html += `
+        <div class="tier-row">
+          <div class="tier-label" style="background-color:${bg};color:${text};">Tier ${tier}</div>
+          <div class="tier-content" id="tier-${tier}"></div>
+        </div>
+      `;
+    }
+
+    // Champion pool (all champions)
+    html += '<div class="champion-pool-title">All Champions (drag to a tier)</div>';
+    html += '<div class="champion-pool" id="champion-pool">';
+    tierlistChampions.forEach(champ => {
+      const iconUrl = `https://ddragon.leagueoflegends.com/cdn/${currentPatchVersion || 'latest'}/img/champion/${champ.image.full}`;
+      html += `<img src="${iconUrl}" alt="${champ.name}" class="tierlist-champion-icon" draggable="true" data-champion-id="${champ.id}" />`;
+    });
+    html += '</div>';
+
+    html += '</div>'; // close champion-detail
+    infoPanel.innerHTML = html;
+
+  } catch (error) {
+    console.error(error);
+    infoPanel.innerHTML = '<p style="color:red;text-align:center;margin-top:2rem;">Could not load tierlist.</p>';
+  }
+}
 
     // ---------- LOAD RUNE DEFINITIONS ----------
     (async function loadRuneData() {
