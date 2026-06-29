@@ -29,7 +29,7 @@
       </div>
     </div>
       <div class="header-right">
-        <button id="creators-btn" class="creators-btn" onclick="showCreators()">Locke Content Creators</button>
+        <button id="creators-btn" class="creators-btn" onclick="showCreatorsPage()">Locke Content Creators</button>
         <button id="tierlist-btn" class="creators-btn" onclick="showTierlist()">Difficulty Tierlist</button>
       </div>
   </header>
@@ -65,28 +65,6 @@
     const CUSTOM_SPLASHES = {
       "Fiddlesticks": "images/splashes/Fiddlesticks.jpg"
     };
-
-    // Abbreviations mapping
-    const ABBREVIATIONS = [
-      "Aurelion Sol asol",
-      "Bel'Veth belveth bv",
-      "Cho'Gath chogath",
-      "Dr Mundo mundo doctor",
-      "Gangplank gp",
-      "Jarvan IV IV j4",
-      "Kai'Sa kaisa ks",
-      "Kha'Zix khazix kz",
-      "Kog'Maw kogmaw km",
-      "K'Sante ksante ks",
-      "LeBlanc lb",
-      "Master Yi yi",
-      "Miss Fortune mf",
-      "Reksai rek'sai rs",
-      "renata glasc rg",
-      "Tahm Kench tk",
-      "Twisted Fate tf",
-      "Vel'Koz velkoz vk"
-    ];
 
     const ABBREV_TO_CHAMP = {
       "asol": "Aurelion Sol",
@@ -240,70 +218,30 @@
       renderIntro();
     }
 
-    // ---------- SHOW CREATORS ----------
-    function showCreators() {
-      if (activeChampionItem) {
-        activeChampionItem.classList.remove('active');
-        activeChampionItem = null;
-      }
-      introBackBtn.style.display = 'inline';
-      setSplashBackground(null);
+function showCreatorsPage() {
+  if (activeChampionItem) {
+    activeChampionItem.classList.remove('active');
+    activeChampionItem = null;
+  }
+  introBackBtn.style.display = 'inline';
+  setSplashBackground(null);
 
-      const infoPanel = document.getElementById('info-panel');
-      infoPanel.innerHTML = '<p style="text-align:center;margin-top:2rem;">Loading leaderboard...</p>';
+  const infoPanel = document.getElementById('info-panel');
+  infoPanel.innerHTML = '<p style="text-align:center;margin-top:2rem;">Loading creators…</p>';
 
-      fetch('leaderboard.json')
-        .then(response => {
-          if (!response.ok) throw new Error('Leaderboard not found');
-          return response.json();
-        })
-        .then(players => {
-          if (!players || players.length === 0) {
-            infoPanel.innerHTML = '<p style="text-align:center;margin-top:2rem;">No creators ranked yet.</p>';
-            return;
-          }
-
-          const tierUrl = (tier) => `images/ranked-emblems/${tier.toLowerCase()}.png`;
-
-          let html = `
-            <div class="champion-detail">
-              <h2>Locke Content Creators – LP Leaderboard</h2>
-              <div class="info-slot">
-                <table class="leaderboard-table">
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>Streamer</th>
-                      <th>Rank</th>
-                      <th>LP</th>
-                      <th>Win Rate</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-          `;
-
-          players.forEach((p, index) => {
-            const winRate = p.winRate || '0';
-            const tierBadge = `<img src="${tierUrl(p.tier)}" class="tier-badge" alt="${p.tier}" /> ${p.tier} ${p.rank}`;
-            html += `
-              <tr>
-                <td>${index + 1}</td>
-                <td><a href="https://twitch.tv/${p.twitch}" target="_blank">${p.displayName}</a></td>
-                <td>${tierBadge}</td>
-                <td>${p.leaguePoints} LP</td>
-                <td>${winRate}%</td>
-              </tr>
-            `;
-          });
-
-          html += `</tbody></table></div></div>`;
-          infoPanel.innerHTML = html;
-        })
-        .catch(err => {
-          console.error(err);
-          infoPanel.innerHTML = '<p style="text-align:center;margin-top:2rem;color:red;">Leaderboard data unavailable right now.</p>';
-        });
-    }
+  fetch('creators.html')
+    .then(response => {
+      if (!response.ok) throw new Error('creators.html not found');
+      return response.text();
+    })
+    .then(html => {
+      infoPanel.innerHTML = html;
+    })
+    .catch(err => {
+      console.error(err);
+      infoPanel.innerHTML = '<p style="text-align:center;margin-top:2rem;color:red;">Creators page unavailable right now.</p>';
+    });
+}
 
 // ---------- CACHED CHAMPIONS (for tierlist) ----------
 let tierlistChampions = null;
@@ -387,9 +325,6 @@ async function showTierlist() {
 
       html += `</div></div>`;
     }
-
-    // Optional: champion pool (empty or removed)
-    // html += `<div class="champion-pool-title">All Champions</div><div class="champion-pool"></div>`;
 
     html += '</div>'; // close champion-detail
     infoPanel.innerHTML = html;
