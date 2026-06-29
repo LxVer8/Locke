@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Locke Tierlist</title>
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0a0a0f;
+      color: #e0d7c6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tierlist-header {
+      background: rgba(10, 10, 15, 0.9);
+      border-bottom: 1px solid #2a2a3a;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .tierlist-header a {
+      color: #c8aa6e;
+      font-weight: bold;
+      font-size: 1.4rem;
+      text-decoration: none;
+      text-shadow: 0 0 10px rgba(200, 170, 110, 0.3);
+    }
+
+    .tierlist-header a:hover {
+      color: #f0c27a;
+    }
+
+    .tierlist-title {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #c8aa6e;
+      text-shadow: 0 0 10px rgba(200, 170, 110, 0.3);
+    }
+
+    .tierlist-container {
+      flex: 1;
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+      width: 100%;
+    }
+
+    .tier {
+      display: flex;
+      align-items: stretch;
+      margin-bottom: 0.8rem;
+      border-radius: 10px;
+      overflow: hidden;
+      background: rgba(27, 27, 42, 0.5);
+      border: 1px solid #2e2e3a;
+    }
+
+    .tier-label {
+      width: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: black;
+      padding: 0.5rem;
+    }
+
+    .tier-content {
+      flex: 1;
+      min-height: 60px;
+      padding: 0.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .champion-pool-title {
+      font-size: 1.2rem;
+      color: #c8aa6e;
+      margin-top: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .champion-pool {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      max-height: 300px;
+      overflow-y: auto;
+      padding: 0.5rem;
+      background: rgba(17, 17, 24, 0.6);
+      border: 1px solid #2a2a3a;
+      border-radius: 12px;
+    }
+
+    .champion-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 8px;
+      border: 2px solid #4a3e2c;
+      background: #0f0f1a;
+      cursor: grab;
+      transition: transform 0.15s, border-color 0.15s;
+    }
+
+    .champion-icon:hover {
+      transform: scale(1.1);
+      border-color: #c8aa6e;
+    }
+
+    .loading-text {
+      text-align: center;
+      margin-top: 2rem;
+      color: #6b5e4a;
+    }
+  </style>
+</head>
+<body>
+  <div class="tierlist-header">
+    <a href="index.html">← Back to The Locke Bible</a>
+    <h1 class="tierlist-title">Locke Tierlist</h1>
+  </div>
+
+  <div class="tierlist-container" id="tierlist-container">
+    <div class="loading-text">Loading tierlist...</div>
+  </div>
+
+  <script>
+    // ---------- DIFFICULTY COLOR FUNCTION ----------
+    function getDifficultyColor(value) {
+      if (value >= 10) return { bg: '#cc0000', text: 'black' };
+      if (value >= 9)  return { bg: '#ea4335', text: 'black' };
+      if (value >= 8)  return { bg: '#ea6435', text: 'black' };
+      if (value >= 7)  return { bg: '#e69138', text: 'black' };
+      if (value >= 6)  return { bg: '#f1c232', text: 'black' };
+      if (value >= 5)  return { bg: '#ffd966', text: 'black' };
+      if (value >= 4)  return { bg: '#d7e455', text: 'black' };
+      if (value >= 3)  return { bg: '#90d542', text: 'black' };
+      if (value >= 2)  return { bg: '#4da029', text: 'black' };
+      return              { bg: '#337432', text: 'black' };
+    }
+
+    // ---------- BUILD TIERLIST UI ----------
+    async function initTierlist() {
+      const container = document.getElementById('tierlist-container');
+
+      try {
+        // Fetch champion data
+        const versionsRes = await fetch('https://ddragon.leagueoflegends.com/api/versions.json');
+        const versions = await versionsRes.json();
+        const latestVersion = versions[0];
+
+        const champsRes = await fetch(`https://ddragon.leagueoflegends.com/cdn/${latestVersion}/data/en_US/champion.json`);
+        const champsData = await champsRes.json();
+        const champions = Object.values(champsData.data);
+
+        // Build tier rows
+        let html = '';
+        for (let tier = 10; tier >= 1; tier--) {
+          const { bg, text } = getDifficultyColor(tier);
+          html += `
+            <div class="tier">
+              <div class="tier-label" style="background-color: ${bg}; color: ${text};">Tier ${tier}</div>
+              <div class="tier-content" id="tier-${tier}"></div>
+            </div>
+          `;
+        }
+
+        // Champion pool
+        html += `<div class="champion-pool-title">All Champions (drag to a tier)</div>`;
+        html += `<div class="champion-pool" id="champion-pool">`;
+
+        champions.forEach(champ => {
+          const iconUrl = `https://ddragon.leagueoflegends.com/cdn/${latestVersion}/img/champion/${champ.image.full}`;
+          html += `<img src="${iconUrl}" alt="${champ.name}" class="champion-icon" draggable="true" data-champion-id="${champ.id}" />`;
+        });
+
+        html += `</div>`;
+
+        container.innerHTML = html;
+
+        // No drag-and-drop logic yet – it's just a visual structure.
+        // The tiers are empty, icons are in the pool.
+
+      } catch (error) {
+        container.innerHTML = '<p style="color:red;text-align:center;">Could not load champions.</p>';
+        console.error(error);
+      }
+    }
+
+    initTierlist();
+  </script>
+</body>
+</html>
