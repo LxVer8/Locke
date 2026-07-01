@@ -738,9 +738,9 @@ header h1 {
   background: rgba(27, 27, 42, 0.7);
   border: 1px solid #2e2e3a;
   border-radius: 10px;
-  overflow: hidden;
+  overflow-x: auto;      /* allow horizontal scrolling */
+  overflow-y: visible;   /* don't clip vertically */
   margin-bottom: 1.2rem;
-  /* No horizontal padding – the table will stretch edge‑to‑edge */
   padding: 0;
 }
 
