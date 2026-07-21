@@ -1,28 +1,28 @@
 {
-  "lastUpdated": "2026-06-28",
-  "updatedBy": "Your Mother",
-  "difficulty": 7,
+  "lastUpdated": "2026-07-21",
+  "updatedBy": "Matchup Discussions",
+  "difficulty": 4.5,
   "phaseDifficulties": [
-    { "label": "EARLY GAME", "value": 2 },
-    { "label": "MID GAME", "value": 6 },
-    { "label": "LATE GAME", "value": 9 }
+    { "label": "EARLY GAME", "value": 4 },
+    { "label": "MID GAME", "value": 7 },
+    { "label": "LATE GAME", "value": 8 }
   ],
-  "videoTitle": "this is the title for the aatrox video",
-  "videoUrl": "https://www.youtube.com/watch?v=1N5SDXSVZHE",
-  "videoAuthor": "Your Mother",
-  "generalTip": "No information was written yet. If you want to help, please contact LxVer8 on Discord or join the <a href='https://discord.gg/Hhm93tvCVC'>Locke Mains' Discord Server</a>, or the <a href='https://www.reddit.com/r/Locke_Mains/'>Locke Mains Reddit</a>.",
-  "earlyGame": "?",
-  "midGame": "?",
+  "videoTitle": "MID Locke vs Ahri - NA Challenger Patch 26.13",
+  "videoUrl": "https://youtu.be/teQjn0LUVG4?t=24",
+  "videoAuthor": "melke",
+  "generalTip": "Skill matchup. Bad Ahris can be punished but good ones are almost unplayable. She has good poke and good defensive abilities against Locke. Can be punished if she makes positioning mistakes or misses EQ. Use W when she's going to hit you with E.",
+  "earlyGame": "You hard win level 1, just fake an auto attack on melee minion and then start spamming Q, walking forward for the auto attack after 3rd nail, and she will be close trying to W you. If you hit your fist Q you can secure the second and third Q, and then she dies to auto + Ignite. Play aggressively. Play off bad mechanics; she missed charm or Q, then go in. At level 2 try to hit Q. If you do, chase with E1 - Q2 - Q3, and then consider if you want to use E2 or not. If you don't have W, use E1 to dodge her E.",
+  "midGame": "Preferably wait until she uses her R and W to easily land Purgatory, since those are her mobility spells. It is worth to trade ult for ult against her, since her ult is a lot more important for her than your ult is for you.",
   "lateGame": "?",
-  "matchupNote": "?",
+  "matchupNote": ".",
 "summoners": [
   "images/summoners/Flash.png",
   "images/summoners/Ignite.png"
 ],
   "abilityMaxOrder": [
     "images/summoners/Locke_Q.png",
-    "images/summoners/Locke_W.png",
-    "images/summoners/Locke_E.png"
+    "images/summoners/Locke_E.png",
+    "images/summoners/Locke_W.png"
   ],
 "items": {
   "starter": [
@@ -30,13 +30,13 @@
     "images/items/Health_Potion.png"
   ],
   "core": [
-    "images/items/Oblivion_Orb.png",
     "images/items/Lich_Bane.png",
-    "images/items/Shadowflame.png"
+    "images/items/Shadowflame.png",
+    "images/items/Rabadons_Deathcap.png"
   ],
   "situational": [
-    "images/items/Liandrys_Torment.png",
-    "images/items/Rabadons_Deathcap.png"
+    "images/items/Banshees_Veil.png",
+    "images/items/Zhonyas_Hourglass.png"
   ]
 },
   "runes": {
@@ -48,14 +48,14 @@
       "row3": "Ultimate Hunter"
     },
     "secondary": {
-      "style": "Resolve",
-      "rune1": "Bone Plating",
-      "rune2": "Revitalize"
+      "style": "Sorcery",
+      "rune1": "Absolute Focus",
+      "rune2": "Gathering Storm"
     },
     "stats": [
       "images/runes/Adaptive_Force.png",
       "images/runes/Adaptive_Force.png",
-      "images/runes/Health_Scaling.png"
+      "images/runes/Health_Flat.png"
     ]
   }
 }
