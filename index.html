@@ -30,9 +30,9 @@
 
 .splash-text {
   position: absolute;
-  left: 100%;          /* left edge at the right edge of the title */
-  top: 50%;           /* top edge at the bottom edge of the title */
-  transform: translate(-50%, 50%) rotate(-20deg);  /* center horizontally, move vertically so center aligns with corner */
+  left: 100%;
+  top: 25%;
+  transform: translate(-50%, 50%) rotate(-20deg);
   font-size: 0.9rem;
   font-weight: bold;
   color: #FFFF00;
@@ -42,8 +42,15 @@
     -1px  1px 0 #3F3F00,
      1px  1px 0 #3F3F00;
   white-space: nowrap;
-  /* no rotation, no animation – you can add rotate(0deg) if you want to restore later */
+  animation: bounce-scale 2s ease-in-out infinite;
 }
+
+@keyframes bounce-scale {
+  0%   { transform: translate(-50%, 50%) rotate(-20deg) scale(1); }
+  50%  { transform: translate(-50%, 50%) rotate(-20deg) scale(1.15); }
+  100% { transform: translate(-50%, 50%) rotate(-20deg) scale(1); }
+}
+
   </style>
 </head>
 <body>
