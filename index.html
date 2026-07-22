@@ -17,12 +17,17 @@
   <!-- Twitter fallback (for other platforms) -->
   <meta name="twitter:card" content="summary_large_image">
 
-  <!-- Inline style for the Minecraft splash text (you can move it to style.css if preferred) -->
   <style>
+    .title-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+
     .splash-text {
-      display: block;
-      margin-top: 0.2em;
-      font-size: 1.4rem;
+      position: absolute;
+      bottom: -0.2em;
+      right: 0;
+      font-size: 0.9rem;
       font-weight: bold;
       color: #FFFF00;
       text-shadow:
@@ -31,12 +36,13 @@
         -1px  1px 0 #3F3F00,
          1px  1px 0 #3F3F00;
       transform: rotate(-5deg);
+      white-space: nowrap;
       animation: splashAnim 0.5s ease-out;
     }
 
     @keyframes splashAnim {
-      from { opacity: 0; transform: rotate(-10deg) scale(0.8); }
-      to   { opacity: 1; transform: rotate(-5deg)  scale(1);   }
+      from { opacity: 0; transform: rotate(-15deg) scale(0.8); }
+      to   { opacity: 1; transform: rotate(-5deg) scale(1);   }
     }
   </style>
 </head>
@@ -63,9 +69,10 @@
 </div>
     </div>
     <div class="header-center">
-      <h1>The Locke Bible</h1>
-      <!-- Splash text added right after the title -->
-      <span id="splash-text" class="splash-text"></span>
+      <div class="title-wrapper">
+        <h1>The Locke Bible</h1>
+        <span id="splash-text" class="splash-text"></span>
+      </div>
       <div class="header-search">
         <input type="text" id="search-input" placeholder="Search champion..." autocomplete="off" />
       </div>
