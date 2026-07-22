@@ -175,48 +175,34 @@
       }
     ];
 
-    // ---------- MINECRAFT-STYLE SPLASH TEXT ----------
-    const splashTexts = [
-      "From dust - to dust!",
-      "Now with more Locke!",
-      "Over 9000 guides!",
-      "Also try Summoner's Rift!",
-      "Locke and loaded!",
-      "Your journey begins here.",
-      "Play safe!",
-      "It's high noon...",
-      "Splash text!",
-      "Now with 100% more Locke!",
-      "Git gud with Locke!",
-      "Locke, stock, and barrel.",
-      "I'm a splash text, I swear!",
-      "Free to read!",
-      "Not endorsed by Riot Games.",
-      "Check your minimap!",
-      "Ward the bush!",
-      "LockeBible.com",
-      "This is a splash text!",
-      "Locke is love, Locke is life.",
-      "Season 2026 ready!",
-      "Made with 🩵",
-      "Better than the tutorial!",
-      "Certified fresh!",
-      "Caution: may contain puns."
-    ];
+// ---------- MINECRAFT-STYLE SPLASH TEXT ----------
+let splashTexts = [];   // will be loaded from splashes.json
 
-    function showRandomSplash() {
-      const splashEl = document.getElementById('splash-text');
-      if (!splashEl) return;
-      const randomIndex = Math.floor(Math.random() * splashTexts.length);
-      splashEl.textContent = splashTexts[randomIndex];
-    }
+async function loadSplashTexts() {
+  try {
+    const res = await fetch('splashes.json');
+    if (!res.ok) throw new Error('Could not load splashes.json');
+    splashTexts = await res.json();
+  } catch (e) {
+    console.warn('Failed to load splash texts, using fallback.');
+    splashTexts = ["The Locke Bible"];   // fallback if file can't be loaded
+  }
+  showRandomSplash();   // pick first random phrase once data is ready
+}
 
-    // Show once on page load
-    window.addEventListener('DOMContentLoaded', showRandomSplash);
+function showRandomSplash() {
+  const splashEl = document.getElementById('splash-text');
+  if (!splashEl || splashTexts.length === 0) return;
+  const randomIndex = Math.floor(Math.random() * splashTexts.length);
+  splashEl.textContent = splashTexts[randomIndex];
+}
 
-    // (Optional) Change every 30 seconds – remove if you want it static
-    setInterval(showRandomSplash, 30000);
-    // ---------- END SPLASH TEXT ----------
+// Start loading the splash texts as soon as the DOM is ready
+window.addEventListener('DOMContentLoaded', () => {
+  loadSplashTexts();
+  // (Optional) periodic change still works
+  setInterval(showRandomSplash, 30000);
+});
 
     // ---------- ROLE FILTERING ----------
     let selectedRoles = new Set();               // currently toggled-on roles
