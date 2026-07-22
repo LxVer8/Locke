@@ -26,7 +26,7 @@
     .splash-text {
       position: absolute;
       bottom: -0.2em;
-      right: -2em;   /* Moved a bit more to the right */
+      right: -2em;
       font-size: 0.9rem;
       font-weight: bold;
       color: #FFFF00;
@@ -37,12 +37,7 @@
          1px  1px 0 #3F3F00;
       transform: rotate(-20deg);
       white-space: nowrap;
-      animation: splashAnim 0.5s ease-out;
-    }
-
-    @keyframes splashAnim {
-      from { opacity: 0; transform: rotate(-15deg) scale(0.8); }
-      to   { opacity: 1; transform: rotate(-5deg) scale(1);   }
+      /* Animation removed – text appears instantly */
     }
   </style>
 </head>
@@ -202,10 +197,7 @@
       if (!splashEl) return;
       const randomIndex = Math.floor(Math.random() * splashTexts.length);
       splashEl.textContent = splashTexts[randomIndex];
-      // Re-trigger the CSS animation
-      splashEl.classList.remove('splash-text');
-      void splashEl.offsetWidth; // force reflow
-      splashEl.classList.add('splash-text');
+      // No need to re-trigger animation – just set the text
     }
 
     // Show once on page load
