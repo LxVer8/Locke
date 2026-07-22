@@ -26,7 +26,7 @@
     .splash-text {
       position: absolute;
       bottom: -0.2em;
-      right: -2em;
+      right: -2em;                /* horizontal offset from the title's right edge */
       font-size: 0.9rem;
       font-weight: bold;
       color: #FFFF00;
@@ -35,9 +35,8 @@
          1px -1px 0 #3F3F00,
         -1px  1px 0 #3F3F00,
          1px  1px 0 #3F3F00;
-      transform: rotate(-20deg);
+      transform: translateX(-50%) rotate(-20deg);   /* centers the text horizontally */
       white-space: nowrap;
-      /* Animation removed – text appears instantly */
     }
   </style>
 </head>
