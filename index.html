@@ -23,21 +23,27 @@
       display: inline-block;
     }
 
-    .splash-text {
-      position: absolute;
-      bottom: -0.2em;
-      right: -2em;                /* horizontal offset from the title's right edge */
-      font-size: 0.9rem;
-      font-weight: bold;
-      color: #FFFF00;
-      text-shadow:
-        -1px -1px 0 #3F3F00,
-         1px -1px 0 #3F3F00,
-        -1px  1px 0 #3F3F00,
-         1px  1px 0 #3F3F00;
-      transform: translateX(-50%) rotate(-20deg);   /* centers the text horizontally */
-      white-space: nowrap;
-    }
+.title-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.splash-text {
+  position: absolute;
+  left: 100%;          /* left edge at the right edge of the title */
+  top: 100%;           /* top edge at the bottom edge of the title */
+  transform: translate(-50%, 50%);  /* center horizontally, move vertically so center aligns with corner */
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #FFFF00;
+  text-shadow:
+    -1px -1px 0 #3F3F00,
+     1px -1px 0 #3F3F00,
+    -1px  1px 0 #3F3F00,
+     1px  1px 0 #3F3F00;
+  white-space: nowrap;
+  /* no rotation, no animation – you can add rotate(0deg) if you want to restore later */
+}
   </style>
 </head>
 <body>
